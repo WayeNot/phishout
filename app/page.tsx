@@ -4,6 +4,12 @@ import { useEffect, useState } from "react";
 export default function Home() {
     type NotifType = "success" | "error" | "warning";
 
+    const notifStyles = {
+        success: { bg: "bg-green-500/20", text: "text-green-400", icon: "✔" },
+        error: { bg: "bg-red-500/20", text: "text-red-400", icon: "✖" },
+        warning: { bg: "bg-yellow-500/20", text: "text-yellow-400", icon: "⚠" },
+    };
+
     interface Notif {
         display: boolean;
         message: string;
@@ -36,19 +42,19 @@ export default function Home() {
     const handleValidate = (e) => {
         e.preventDefault;
 
-        if (currentFlag === "") setNotif({ display: true, message: "Aucun flag donné", state: "error" });
+        if (currentFlag === "") setNotif({ display: true, message: "Aucun flag donné", type: "error" });
 
         console.log("phishout{" + currentFlag + "}")
         console.log("phishout{" + flags[selectedFlag.nbr - 1].flag + "}")
 
 
         if (currentFlag === "phishout{" + flags[selectedFlag.nbr - 1].flag + "}") {
-            setNotif({ display: true, message: "Vous avez réussi ce flag", state: "success" })
+            setNotif({ display: true, message: "Vous avez réussi ce flag", type: "success" })
             setIsFind({ ...isFind, [selectedFlag.nbr]: true })
             setSelectedFlag(null);
             setCurrentFlag("")
         } else {
-            setNotif({ display: true, message: "Mauvais flag", state: "error" });
+            setNotif({ display: true, message: "Mauvais flag", type: "error" });
             setCurrentFlag("")
         }
     }
