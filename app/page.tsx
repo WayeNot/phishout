@@ -33,12 +33,12 @@ export default function Home() {
     const current = notifStyles[notif.type];
 
     const flags: Flag[] = [
-        { nbr: 1, name: "Nom de l'image", flag: "image.png", flag_format: "x", description: "Description du flag 1" },
-        { nbr: 2, name: "Nom du compte", flag: "criquet_sauvage4", flag_format: "x", description: "Description du flag 2" },
-        { nbr: 3, name: "Nom prénom de la prochaine victime", flag: "Edvard_Doris", flag_format: "x_x", description: "Description du flag 3" },
-        { nbr: 4, name: "Ville de la victime", flag: "le-puy-en-velay", flag_format: "x", description: "Description du flag 4" },
+        { nbr: 1, name: "Nom de l'image", flag: "image.png", flag_format: "x", description: "" },
+        { nbr: 2, name: "Nom du compte", flag: "criquet_sauvage4", flag_format: "x", description: "" },
+        { nbr: 3, name: "Nom prénom de la prochaine victime", flag: "Edvard_Doris", flag_format: "x_x", description: "" },
+        { nbr: 4, name: "Ville de la victime", flag: "le-puy-en-velay", flag_format: "x", description: "" },
     ]; const [isFind, setIsFind] = useState<Record<number, boolean>>({ 1: false, 2: false, 3: false });
-    
+
     const [selectedFlag, setSelectedFlag] = useState<Flag | null>(null);
     const [currentFlag, setCurrentFlag] = useState("");
 
