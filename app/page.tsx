@@ -2,31 +2,26 @@
 import { useEffect, useState } from "react";
 
 export default function Home() {
-    const notifStyles = {
-        success: {
-            bg: "bg-green-500/20",
-            text: "text-green-400",
-            icon: "✔",
-        },
-        error: {
-            bg: "bg-red-500/20",
-            text: "text-red-400",
-            icon: "✖",
-        },
-        warning: {
-            bg: "bg-yellow-500/20",
-            text: "text-yellow-400",
-            icon: "⚠",
-        },
-    };
+    type NotifType = "success" | "error" | "warning";
+
+    interface Notif {
+        display: boolean;
+        message: string;
+        type: NotifType;
+    }
+
+    const [notif, setNotif] = useState<Notif>({
+        display: false,
+        message: "",
+        type: "success",
+    });
+
+    const current = notifStyles[notif.type];
 
     const flags = JSON.parse(process.env.NEXT_PUBLIC_FLAGS || "[]");
     const [isFind, setIsFind] = useState({ 1: false, 2: false, 3: false })
     const [selectedFlag, setSelectedFlag] = useState(null);
     const [currentFlag, setCurrentFlag] = useState("");
-
-    const [notif, setNotif] = useState({ display: false, state: "", message: "" });
-    const current = notifStyles[notif.type || "success"];
 
     useEffect(() => {
         if (notif.display) {
@@ -46,13 +41,13 @@ export default function Home() {
         console.log("phishout{" + currentFlag + "}")
         console.log("phishout{" + flags[selectedFlag.nbr - 1].flag + "}")
 
-            
+
         if (currentFlag === "phishout{" + flags[selectedFlag.nbr - 1].flag + "}") {
             setNotif({ display: true, message: "Vous avez réussi ce flag", state: "success" })
             setIsFind({ ...isFind, [selectedFlag.nbr]: true })
             setSelectedFlag(null);
             setCurrentFlag("")
-        } else { 
+        } else {
             setNotif({ display: true, message: "Mauvais flag", state: "error" });
             setCurrentFlag("")
         }
@@ -108,7 +103,7 @@ export default function Home() {
 
                         <p className="text-gray-300 text-[17px] mb-6 leading-relaxed">{selectedFlag.description}</p>
 
-                        <input value={currentFlag} onChange={(e) => setCurrentFlag(e.target.value)} type="text" placeholder={"phishout{"+selectedFlag.flag_format+"}"} className="w-full mb-4 px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <input value={currentFlag} onChange={(e) => setCurrentFlag(e.target.value)} type="text" placeholder={"phishout{" + selectedFlag.flag_format + "}"} className="w-full mb-4 px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
 
                         <div className="flex gap-3">
                             <button onClick={(e) => handleValidate(e)} className="flex-1 bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg font-medium cursor-pointer">Valider</button>
