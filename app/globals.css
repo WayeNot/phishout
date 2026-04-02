@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-* {
+body {
     background: #212529;
 }
 

@@ -96,9 +96,9 @@ export default function Home() {
                 <a target="_blank" className="border-2 p-2 rounded-[8px] text-white/60 hover:bg-white hover:text-black hover:border-white transition duration-500" href="DATA.zip">Ressource de départ</a>
             </div>
 
-            <div className="flex items-center justify-between w-[65%] m-auto mt-25">
+            <div className="flex items-center justify-between w-[65%] m-auto mt-25 gap-8">
                 {flags.map((item) => (
-                    <div key={item.nbr} onClick={() => setSelectedFlag(item)} className={` py-7 w-[20%] text-center rounded-[8px] ${!isFind[item.nbr] ? "bg-red-500 hover:bg-red-800" : "bg-green-600 hover:bg-green-800"} transition duration-500 cursor-pointer font-bold`}>
+                    <div key={item.nbr} onClick={() => setSelectedFlag(item)} className={` py-7 w-[25%] text-center rounded-[8px] ${!isFind[item.nbr] ? "bg-red-500 hover:bg-red-800" : "bg-green-600 hover:bg-green-800"} transition duration-500 cursor-pointer font-bold`}>
                         <p className="text-white/70">{item.name}</p>
                     </div>
                 ))}
