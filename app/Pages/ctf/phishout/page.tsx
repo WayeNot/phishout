@@ -203,6 +203,7 @@ export default function Home() {
                     © 2026 CyberLab - Tous droits réservés
                 </p>
             </footer>
+            <script>history.replaceState("", "", "CTF-PhishOut");</script>
         </div>
     );
 }
