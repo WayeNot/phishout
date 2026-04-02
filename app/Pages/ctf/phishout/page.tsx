@@ -146,7 +146,7 @@ export default function Home() {
 
             <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 w-full sm:w-[90%] lg:w-[65%] m-auto mt-10 sm:mt-20 px-4">
                 {flags.map((item) => (
-                    <div key={item.nbr} onClick={() => setSelectedFlag(item)} className={`w-full sm:w-[48%] lg:w-[18%] py-5 sm:py-6 text-center rounded-lg ${!isFind[item.nbr] ? "bg-red-500 hover:bg-red-800" : "bg-green-600 hover:bg-green-800" } transition duration-500 cursor-pointer font-bold`}><p className="text-white/70 text-sm sm:text-base">{item.name}</p></div>
+                    <div key={item.nbr} onClick={() => setSelectedFlag(item)} className={`w-full flex items-center justify-center sm:w-[48%] lg:w-[18%] py-5 sm:py-6 text-center rounded-lg ${!isFind[item.nbr] ? "bg-red-500 hover:bg-red-800" : "bg-green-600 hover:bg-green-800" } transition duration-500 cursor-pointer font-bold`}><p className="text-white/70 text-sm sm:text-base">{item.name}</p></div>
                 ))}
             </div>
 
