@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { FaCheckCircle, FaTimesCircle, FaExclamationTriangle, FaLightbulb } from "react-icons/fa";
+import { FaCheckCircle, FaTimesCircle, FaExclamationTriangle, FaLightbulb, FaNewspaper } from "react-icons/fa";
 import { MdExitToApp } from "react-icons/md";
 
 type NotifType = "success" | "error" | "warning";
@@ -115,6 +115,7 @@ export default function Home() {
     }
 
     const [menuOpen, setMenuOpen] = useState(false);
+    const [showPaper, setShowPaper] = useState({ display: false, news: [{ icon: "", title: "Déploiement", text: "l,rvdrklfv,rek,bklrednbjmefdnk" }, { icon: "", title: "Déploiement", text: "l,rvdrklfv,rek,bklrednbjmefdnk" }] });
 
     return (
         <div className="flex flex-col min-h-screen bg-[#212529]">
@@ -124,10 +125,11 @@ export default function Home() {
                 <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
 
                 <div className="hidden sm:flex items-center gap-5 text-white/40">
-                    <a href="/" className="hover:text-white/70 cursor-pointer">Accueil</a>
-                    <a href="/Pages/challenges" className="hover:text-white/70 cursor-pointer">Nos challenges</a>
-                    <p className="hover:text-white/70 cursor-pointer">Mon compte</p>
-                    <MdExitToApp className="hover:text-white/70 cursor-pointer text-xl"/>
+                    <a href="/" className="hover:text-white/70 cursor-pointer transition duration-500">Accueil</a>
+                    <a href="/Pages/challenges" className="hover:text-white/70 cursor-pointer transition duration-500">Nos challenges</a>
+                    <p className="hover:text-white/70 cursor-pointer transition duration-500">Mon compte</p>
+                    <MdExitToApp className="hover:text-white/70 cursor-pointer text-xl transition duration-500" />
+                    <FaNewspaper onClick={() => setShowPaper({ ...showPaper, display: true })} className="hover:text-white/70 cursor-pointer text-xl transition duration-500" />
                 </div>
             </nav>
             {menuOpen && (
@@ -135,19 +137,20 @@ export default function Home() {
                     <div className="flex flex-col gap-3">
                         <button className="w-full text-left px-4 py-3 rounded-lg bg-[#2a2a3d] text-white/70 hover:bg-[#3a3a4d] transition">Nos challenges</button>
                         <button className="w-full text-left px-4 py-3 rounded-lg bg-[#2a2a3d] text-white/70 hover:bg-[#3a3a4d] transition">Mon compte</button>
-                        <button className="w-full flex items-center gap-2 px-4 py-3 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition"><MdExitToApp/>Déconnexion</button>
+                        <button className="w-full flex items-center gap-2 px-4 py-3 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition"><MdExitToApp />Déconnexion</button>
                     </div>
                 </div>
             )}
             <div className="py-10 sm:py-15 px-4 bg-gray-800 flex flex-col items-center justify-center gap-5">
-                <h2 className="text-white/60 text-xl sm:text-3xl italic text-center">CTF PhishOut - CyberLab</h2>
+                <h2 className="text-white/60 text-xl sm:text-3xl italic text-center">CTF PhishOut</h2>
+                <hr className="w-2/4 text-white" />
                 <p className="text-center w-full sm:w-2/3 lg:w-1/2 text-white/40 text-sm sm:text-base leading-relaxed">Vous faites partie du groupe spécial d’investigation de la gendarmerie. Depuis plusieurs jours, un réseau de hackers spécialisé dans la vente de kits clés en main automatisés pour créer et déployer des sites de phishing revendique de nombreuses attaques sur le sol français. Grâce au travail des équipes, vous avez réussi à identifier les têtes du réseau : Gérard, 34 ans, ancien développeur full stack reconverti dans le développement d’API le jour et chef du réseau la nuit. À ses côtés, Marin, 19 ans, passionné d’informatique depuis tout petit, et Rémy, 20 ans, également passionné d’informatique. À eux trois, ils forment un groupe très dangereux. D’après des fichiers récupérés sur l’un de leurs serveurs, ils préparent une attaque contre le responsable informatique d’une entreprise d’hébergement française.<br />Votre mission : récupérer les fichiers compromis et identifier quelle sera leur prochaine cible.</p>
-                <a target="_blank" className="border-2 px-4 py-2 rounded-lg text-white/60 hover:bg-white hover:text-black hover:border-white transition duration-500 text-sm sm:text-base" href="Files.zip">Ressource de départ</a>
+                <a target="_blank" className="border-2 px-4 py-2 rounded-lg text-white/60 hover:bg-white hover:text-black hover:border-white transition duration-500 text-sm sm:text-base" href="../../Files.zip">Ressource de départ</a>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 w-full sm:w-[90%] lg:w-[65%] m-auto mt-10 sm:mt-20 px-4">
                 {flags.map((item) => (
-                    <div key={item.nbr} onClick={() => setSelectedFlag(item)} className={`w-full flex items-center justify-center sm:w-[48%] lg:w-[18%] py-5 sm:py-6 text-center rounded-lg ${!isFind[item.nbr] ? "bg-red-500 hover:bg-red-800" : "bg-green-600 hover:bg-green-800" } transition duration-500 cursor-pointer font-bold`}><p className="text-white/70 text-sm sm:text-base">{item.name}</p></div>
+                    <div key={item.nbr} onClick={() => setSelectedFlag(item)} className={`w-full flex items-center justify-center sm:w-[48%] lg:w-[18%] py-5 sm:py-6 text-center rounded-lg ${!isFind[item.nbr] ? "bg-red-500 hover:bg-red-800" : "bg-green-600 hover:bg-green-800"} transition duration-500 cursor-pointer font-bold`}><p className="text-white/70 text-sm sm:text-base">{item.name}</p></div>
                 ))}
             </div>
 
@@ -175,7 +178,7 @@ export default function Home() {
                             <p>{"Format du flag : phishout{" + selectedFlag.flag_format + "}"}</p>
                         </div>
                         <div className="flex items-center gap-3 mb-5">
-                            <input value={currentFlag} onChange={(e) => setCurrentFlag(e.target.value)} type="text" placeholder={"phishout{" + selectedFlag.flag_format + "}"} className="flex-1 h-[40px] px-4 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"/>
+                            <input value={currentFlag} onChange={(e) => setCurrentFlag(e.target.value)} type="text" placeholder={"phishout{" + selectedFlag.flag_format + "}"} className="flex-1 h-[40px] px-4 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base" />
                             {selectedFlag.hint && (
                                 <button onClick={handleHint} className="h-[40px] px-3 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-yellow-300 transition"><FaLightbulb /></button>
                             )}
@@ -189,6 +192,25 @@ export default function Home() {
                                 <p className="w-full mt-4 px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"><span className="text-yellow-300">Indice</span> : {selectedFlag.hint}</p>
                             </div>
                         )}
+                    </div>
+                </div>
+            )}
+            {showPaper.display && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                    <div className="w-full max-w-md bg-[#1e1e2f] border border-gray-700 rounded-2xl shadow-2xl p-6 animate-fadeIn">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-bold text-white">PatchNotes</h2>
+                            <button onClick={() => setShowPaper({ ...showPaper, display: false })} className="text-gray-400 hover:text-white transition cursor-pointer">✕</button>
+                        </div>
+                        <hr className="my-5 text-white" />
+                        <div className="flex items-center flex-col gap-5">
+                            {showPaper.news.map((el) => (
+                                <div className="flex flex-col justify-between items-center mb-4 w-full">
+                                    <h2 className="text-xl font-bold text-white">{el.title}</h2>
+                                    <p className="w-full mt-4 px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">{el.text}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             )}
