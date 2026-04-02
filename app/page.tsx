@@ -44,8 +44,6 @@ export default function Home() {
         { nbr: 6, name: "Où habite-t-elle ?", flag: "le-puy-en-velay", flag_format: "x", description: "Arriverez-vous à retrouver la ville où habite cette victime ?", hint: "", isHintShow: false },
     ];
 
-    const [nbrHint, setNbrHint] = useState(-1)
-
     const owners = [
         { name: "Timéo", linkedin: "https://www.linkedin.com/in/tim%C3%A9o-baffreau-le-roux-511a1a353/" },
         { name: "Romain", linkedin: "https://www.linkedin.com/in/romain-guibert-2851a52bb/" },
@@ -86,6 +84,35 @@ export default function Home() {
             }
         }
     };
+
+    const [hasGetHint, setHasGetHint] = useState(false)
+    const [hintTime, setHintTime] = useState(0)
+
+    useEffect(() => {
+        if (!hasGetHint) return;
+
+        setHintTime(15);
+
+        const interval = setInterval(() => {
+            setHintTime((prev) => {
+                if (prev <= 1) {
+                    clearInterval(interval);
+                    setHasGetHint(false);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 60000);
+
+        return () => clearInterval(interval);
+
+    }, [hasGetHint]);
+
+    const handleHint = () => {
+        if (hintTime !== 0) return setNotif({ display: true, message: `Vous devez attendre ${hintTime} minutes avant de pouvoir redemander un indice !`, type: "error" });
+        setHintsShown({ ...hintsShown, [selectedFlag!.nbr]: !hintsShown[selectedFlag!.nbr] });
+        setHasGetHint(true)
+    }
 
     return (
         <div className="w-screen bg-[#212529] h-screen">
@@ -138,10 +165,12 @@ export default function Home() {
                             <p>{"Format du flag : phishout{" + selectedFlag.flag_format + "}"}</p>
                         </div>
                         <div className="flex items-center justify-center gap-5 h-[40px] mb-5">
-                            <input value={currentFlag} onChange={(e) => setCurrentFlag(e.target.value)} type="text" placeholder={"phishout{" + selectedFlag.flag_format + "}"} className="w-7/8 h-full px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                            <div onClick={() => setHintsShown({ ...hintsShown, [selectedFlag!.nbr]: !hintsShown[selectedFlag!.nbr] })} className="w-1/8 h-full px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white cursor-pointer hover:text-yellow-300 transition duration-500">
-                                <FaLightbulb />
-                            </div>
+                            <input value={currentFlag} onChange={(e) => setCurrentFlag(e.target.value)} type="text" placeholder={"phishout{" + selectedFlag.flag_format + "}"} className={`${selectedFlag.hint === "" ? "w-full" : "w-7/8"} h-full px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500`} />
+                            {selectedFlag.hint && (
+                                <div onClick={() => handleHint()} className="w-1/8 h-full px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white cursor-pointer hover:text-yellow-300 transition duration-500">
+                                    <FaLightbulb />
+                                </div>
+                            )}
                         </div>
                         <div className="flex gap-3">
                             <button onClick={handleValidate} className="flex-1 bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg font-medium cursor-pointer">Valider</button>
