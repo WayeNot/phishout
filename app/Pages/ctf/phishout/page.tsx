@@ -114,12 +114,12 @@ export default function Home() {
         setHasGetHint(true)
     }
 
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [showPaper, setShowPaper] = useState({ display: false, news: [{ icon: "", title: "Déploiement", text: "l,rvdrklfv,rek,bklrednbjmefdnk" }, { icon: "", title: "Déploiement", text: "l,rvdrklfv,rek,bklrednbjmefdnk" }] });
+    // const [menuOpen, setMenuOpen] = useState(false);
+    // const [showPaper, setShowPaper] = useState({ display: false, news: [{ icon: "", title: "Déploiement", text: "l,rvdrklfv,rek,bklrednbjmefdnk" }, { icon: "", title: "Déploiement", text: "l,rvdrklfv,rek,bklrednbjmefdnk" }] });
 
     return (
         <div className="flex flex-col min-h-screen bg-[#212529]">
-            <nav className="flex items-center justify-between p-4 mx-3 sm:mx-5">
+            {/* <nav className="flex items-center justify-between p-4 mx-3 sm:mx-5">
                 <h1 className="text-xl sm:text-2xl text-white/60 font-bold">CTF CyberLab</h1>
 
                 <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
@@ -131,8 +131,8 @@ export default function Home() {
                     <MdExitToApp className="hover:text-white/70 cursor-pointer text-xl transition duration-500" />
                     <FaNewspaper onClick={() => setShowPaper({ ...showPaper, display: true })} className="hover:text-white/70 cursor-pointer text-xl transition duration-500" />
                 </div>
-            </nav>
-            {menuOpen && (
+            </nav> */}
+            {/* {menuOpen && (
                 <div className="sm:hidden px-4 pb-4 animate-fadeIn">
                     <div className="flex flex-col gap-3">
                         <button className="w-full text-left px-4 py-3 rounded-lg bg-[#2a2a3d] text-white/70 hover:bg-[#3a3a4d] transition">Nos challenges</button>
@@ -140,7 +140,7 @@ export default function Home() {
                         <button className="w-full flex items-center gap-2 px-4 py-3 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition"><MdExitToApp />Déconnexion</button>
                     </div>
                 </div>
-            )}
+            )} */}
             <div className="py-10 sm:py-15 px-4 bg-gray-800 flex flex-col items-center justify-center gap-5">
                 <h2 className="text-white/60 text-xl sm:text-3xl italic text-center">CTF PhishOut</h2>
                 <hr className="w-2/4 text-white" />
@@ -195,7 +195,7 @@ export default function Home() {
                     </div>
                 </div>
             )}
-            {showPaper.display && (
+            {/* {showPaper.display && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
                     <div className="w-full max-w-md bg-[#1e1e2f] border border-gray-700 rounded-2xl shadow-2xl p-6 animate-fadeIn">
                         <div className="flex justify-between items-center mb-4">
@@ -213,7 +213,7 @@ export default function Home() {
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
 
             <footer className="w-full flex flex-col items-center justify-center gap-3 sm:gap-5 text-white/40 text-xs sm:text-sm px-4 py-5 border-t border-gray-700/50 bg-[#1e1e2f]/50 backdrop-blur-md mt-auto">
                 <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5">
