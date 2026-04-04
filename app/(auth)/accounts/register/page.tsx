@@ -18,16 +18,9 @@ export default function Home() {
             );
     };
 
-    const validatePassword = () => {
-        return String(credentials.password).match(
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/
-        );
-    };
-
     const handleRegister = async (e: any) => {
         e.preventDefault();
         if (!validateEmail()) return alert("Mauvais format d'adresse mail !");
-        if (!validatePassword()) return alert("Mauvais format de mot de passe !");
         const res = await fetch("/api/account/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },

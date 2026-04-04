@@ -6,7 +6,7 @@ import { MdAccountBox } from "react-icons/md";
 import { useRouter } from 'next/navigation'
 
 export default function Home() {
-    const [credentials, setCredentials] = useState({ mail: "", password: "" })
+    const [credentials, setCredentials] = useState({ username: "", password: "" })
     const router = useRouter();
 
     const handleLogin = async (e: any) => {
@@ -14,7 +14,7 @@ export default function Home() {
         const res = await fetch("/api/account/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ mail: credentials.mail, password: credentials.password })
+            body: JSON.stringify({ username: credentials.username, password: credentials.password })
         })
 
         if (!res.ok) {
@@ -38,7 +38,7 @@ export default function Home() {
                     <hr className="text-white w-4/5 my-5 m-auto" />
                     <div className="flex flex-col items-center w-full gap-4">
                         <div className="flex flex-col items-center justify-center gap-1 w-full">
-                            <input value={credentials.mail} onChange={(e) => setCredentials({ ...credentials, mail: e.target.value })} className="border-2 border-white/40 rounded-[8px] w-4/5 text-white/80 p-[6px]" placeholder="Adresse mail" type="email" />
+                            <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="border-2 border-white/40 rounded-[8px] w-4/5 text-white/80 p-[6px]" placeholder="Nom d'utilisateur" type="text" />
                             <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="border-2 border-white/40 rounded-[8px] w-4/5 text-white/80 p-[6px]" placeholder="Mot de passe" type="password" />
                         </div>
                         <button onClick={(e) => handleLogin(e)} className="cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 rounded-[8px] w-4/5 p-[8px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Suivant<BsArrowRight /></button>

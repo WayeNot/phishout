@@ -1,16 +1,26 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { FaNewspaper } from "react-icons/fa"
-import { MdExitToApp } from "react-icons/md"
+import { MdAdminPanelSettings, MdExitToApp } from "react-icons/md"
 import { useRouter } from "next/navigation"
 
 import PatchNote from "@/components/PatchNote"
 
+type User = {
+    user_id: number
+    username: string
+    email: string
+    password: string
+    role: string
+    created_at: string
+}
+
 export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false)
     const [showPaper, setShowPaper] = useState(false)
+    const [userSession, setUserSession] = useState<{ userData: User[] }>({ userData: [] })
 
     const router = useRouter()
 
@@ -24,13 +34,36 @@ export default function Navbar() {
         }
     }
 
+    useEffect(() => {
+        async function getSession() {
+            const res = await fetch("/api/session", {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            })
+
+            if (!res.ok) {
+                console.error('Impossible de GET la session')
+                return
+            }
+            setUserSession(await res.json())
+        }
+        getSession()
+    }, [])
+
+    useEffect(() => {
+        console.log(userSession.userData);
+    }, [userSession])
+
     return (
         <div>
             <nav className="flex items-center justify-between p-4 mx-3 sm:mx-5">
 
                 <div className="flex items-center gap-3 text-white/40">
                     <h1 className="text-xl sm:text-2xl text-white/60 font-bold">CTF Platform</h1>
-                    <FaNewspaper onClick={() => setShowPaper(true)} className="hover:text-white/70 cursor-pointer text-xl transition duration-300"/>
+                    <FaNewspaper onClick={() => setShowPaper(true)} className="hover:text-white/70 cursor-pointer text-xl transition duration-300" />
+                    {userSession.userData?.[0]?.role === "owner" && (
+                        <MdAdminPanelSettings className="text-red-500 font-bold text-[22px] hover:text-red-800 transition duration-500 cursor-pointer"/>
+                    )}
                 </div>
 
                 <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
@@ -39,7 +72,7 @@ export default function Navbar() {
                     <Link href="/home" className="hover:text-white/70 transition">Accueil</Link>
                     <Link href="/challenges" className="hover:text-white/70 transition">Nos challenges</Link>
                     <Link href="/accounts" className="hover:text-white/70 transition">Mon compte</Link>
-                    <MdExitToApp onClick={handleLogout} className="hover:text-red-400 cursor-pointer text-xl transition"/>
+                    <MdExitToApp onClick={handleLogout} className="hover:text-red-400 cursor-pointer text-xl transition" />
                 </div>
             </nav>
 
