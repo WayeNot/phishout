@@ -13,9 +13,7 @@ export async function POST(req: Request) {
     try {
         const { username, mail, password } = await req.json()
 
-        if (!username || !mail || !password) {
-            return new Response("Missing fields", { status: 400 })
-        }
+        if (!username || !mail || !password) return new Response("Missing fields", { status: 400 })
 
         const hashedPassword = await bcrypt.hash(password, 15)
         const sessionId = await getRandomSession()
@@ -37,7 +35,7 @@ export async function POST(req: Request) {
         console.error(err)
 
         if (err.code === '23505') {
-            return new Response("Email déjà pris !", { status: 400 })
+            return new Response("Email / Nom d'utilisateur déjà pris !", { status: 400 })
         }
 
         return new Response("DB Error", { status: 500 })

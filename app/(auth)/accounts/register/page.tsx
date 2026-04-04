@@ -10,8 +10,24 @@ export default function Home() {
     const [credentials, setCredentials] = useState({ username: "", mail: "", password: "" })
     const router = useRouter();
 
+    const validateEmail = () => {
+        return String(credentials.mail)
+            .toLowerCase()
+            .match(
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            );
+    };
+
+    const validatePassword = () => {
+        return String(credentials.password).match(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/
+        );
+    };
+
     const handleRegister = async (e: any) => {
         e.preventDefault();
+        if (!validateEmail()) return alert("Mauvais format d'adresse mail !");
+        if (!validatePassword()) return alert("Mauvais format de mot de passe !");
         const res = await fetch("/api/account/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
