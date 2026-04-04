@@ -2,10 +2,19 @@
 
 import { useEffect, useState } from "react"
 
-export default function AdminPanel({ closePanel }: { closePanel: () => void }) {    const [panelTab, setPanelTab] = useState(0)
-    const [users, setUsers] = useState([])
-    const [editUser, setEditUser] = useState(null)
-    const [searchUser, setSearchUser] = useState("")
+type User = {
+    user_id: number
+    username: string
+    email: string
+    role: string
+    created_at: string
+}
+
+export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
+    const [panelTab, setPanelTab] = useState(0)
+
+    const [users, setUsers] = useState<User[]>([])
+    const [editUser, setEditUser] = useState<number | null>(null)
 
     const getAllUser = async () => {
         const res = await fetch("/api/users", {
@@ -32,7 +41,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                 <div className="flex flex-col gap-5 max-h-[50vh] overflow-y-auto pr-2 text-center text-white/70">
                     <h2 className="text-orange-500 italic font-bold">Panel admin - CTF Platform</h2>
                 </div>
-                <hr className="my-5 border-gray-600"/>
+                <hr className="my-5 border-gray-600" />
                 <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center justify-center gap-5">
                         <button onClick={() => { getAllUser(); setPanelTab(0) }} className={`${panelTab === 0 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 transition cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Dashboard</button>
@@ -49,7 +58,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                 </div>
                 {panelTab === 1 && (
                     <div className="w-full">
-                        <input value={searchUser} onChange={(e) => setSearchUser(e.target.value)} type="text" placeholder="Rechercher un utilisateur" className="mb-5 w-5/20 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none text-sm sm:text-base p-2" />
+                        {/* <input value={searchUser} onChange={(e) => setSearchUser(e.target.value)} type="text" placeholder="Rechercher un utilisateur" className="mb-5 w-5/20 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none text-sm sm:text-base p-2" /> */}
                         <div className="flex items-center gap-3 w-full">
                             {Array.isArray(users) && users.map((el) => (
                                 <div onClick={() => setEditUser(el.user_id)} key={el.user_id} className="border border-gray-600 text-white/40 rounded-[7px] w-1/10 py-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer">
