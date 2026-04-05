@@ -15,3 +15,12 @@ export async function POST(req: Request) {
     await sql`INSERT INTO suggest (user_id, suggest) VALUES (${user_id}, ${text})`
     return NextResponse.json({ success: true })
 }
+
+export async function DELETE(req: Request) {
+    const { suggest_id } = await req.json()
+    
+    if ( !suggest_id ) return NextResponse.json({ success: false, error: "Aucune suggestion renseignée !" }, { status: 400 })
+
+    await sql`DELETE FROM suggest WHERE id = ${suggest_id}`
+    return NextResponse.json({ success: true })
+}

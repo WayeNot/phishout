@@ -4,6 +4,8 @@ import { useEffect, useState } from "react"
 import { FaPlusSquare, FaRegEdit } from "react-icons/fa"
 import { MdAdminPanelSettings } from "react-icons/md"
 import { useNotif } from "./NotifProvider"
+import { FcAcceptDatabase } from "react-icons/fc"
+import { CiCircleRemove } from "react-icons/ci"
 
 type User = {
     user_id: number
@@ -44,12 +46,6 @@ export default function CoreHub({ show, setShow }: { show: boolean, setShow: (v:
     const patchnote = [
         { title: "05/04/2026", patch: [{ text: "Déconnexion fonctionnel" }, { text: "Création de compte terminé" }] },
         { title: "04/04/2026", patch: [{ text: "Ajout de page Coming soon" }, { text: "Résolution de beug sur le fichier ressource" }, { text: "Ajout de la page d'accueil + nos challenges" }] },
-    ]
-
-    const features = [
-        { title: "Création des comptes" },
-        { title: "Login fonctionnel" },
-        { title: "Création du panel admin" },
     ]
 
     useEffect(() => {
@@ -96,11 +92,6 @@ export default function CoreHub({ show, setShow }: { show: boolean, setShow: (v:
         getFeatures()
     }, [addFeatures])
 
-
-    useEffect(() => {
-        console.log(allFeatures);
-    }, [addFeatures])
-
     useEffect(() => {
         const getSuggest = async () => {
             const res = await fetch("/api/corehub/suggest", {
@@ -145,6 +136,23 @@ export default function CoreHub({ show, setShow }: { show: boolean, setShow: (v:
         showNotif("Feature ajouté avec succès !", "success")
     }
 
+    const handleRemoveFeature = async (feature_id: any) => {
+        const res = await fetch("/api/corehub/features", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ feature_id: feature_id })
+        })
+
+        if (!res.ok) {
+            const err = await res.text()
+            showNotif(err, "error")
+            return
+        }
+
+        showNotif("Feature supprimé avec succès !", "success")
+        setAllFeatures(allFeatures.filter(el => el.id !== feature_id))
+    }
+
     const handleSuggest = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!suggestText) {
@@ -167,6 +175,23 @@ export default function CoreHub({ show, setShow }: { show: boolean, setShow: (v:
         setSuggestText("")
 
         showNotif("Suggestion envoyé avec succès !", "success")
+    }
+
+    const handleRemoveSuggest = async (suggest_id: any) => {
+        const res = await fetch("/api/corehub/suggest", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ suggest_id: suggest_id })
+        })
+
+        if (!res.ok) {
+            const err = await res.text()
+            showNotif(err, "error")
+            return
+        }
+
+        showNotif("Suggestion supprimé avec succès !", "success")
+        setAllSuggest(allSuggest.filter(el => el.id !== suggest_id))
     }
 
     if (!show) return null
@@ -192,7 +217,7 @@ export default function CoreHub({ show, setShow }: { show: boolean, setShow: (v:
                 <hr className="my-5 border-gray-600" />
 
                 <div className="flex flex-col gap-5 max-h-[50vh] overflow-y-auto pr-2">
-                    {paperState === 0 && (
+                    {/* {paperState === 0 && (
                         <div className="w-full">
                             {patchnote.map((el) => (
                                 <div key={el.title} className="mb-4 w-full">
@@ -204,6 +229,23 @@ export default function CoreHub({ show, setShow }: { show: boolean, setShow: (v:
                                     </div>
                                 </div>
                             ))}
+                            <p className="w-full text-white/80 px-4 py-3 rounded-lg bg-[#2a2a3d] border border-gray-600 flex flex-col gap-2">⏳ En cours de développement</p>
+                        </div>
+                    )} */}
+
+                    {paperState === 0 && (
+                        <div className="w-full">
+                            <div className="flex items-center justify-between mb-2">
+                                <h2 className="text-lg font-bold text-white mb-2">Patchnote journalier</h2>
+                                {userSession.userData?.[0]?.role === "owner" && (
+                                    <FaPlusSquare onClick={() => setAddFeatures(true)} className="text-[22px] text-white/40 hover:text-white/70 transition duration-500 cursor-pointer" />
+                                )}
+                            </div>
+                            <div className="flex flex-col items-center gap-3 w-full">
+                                {allFeatures.map((el, i) => (
+                                    <p key={i} className="w-full text-white/80 px-4 py-3 rounded-lg bg-[#2a2a3d] border border-gray-600 flex flex-col gap-2">⏳ {el.feature}</p>
+                                ))}
+                            </div>
                         </div>
                     )}
 
@@ -217,7 +259,19 @@ export default function CoreHub({ show, setShow }: { show: boolean, setShow: (v:
                             </div>
                             <div className="flex flex-col items-center gap-3 w-full">
                                 {allFeatures.map((el, i) => (
-                                    <p key={i} className="w-full text-white/80 px-4 py-3 rounded-lg bg-[#2a2a3d] border border-gray-600 flex flex-col gap-2">⏳ {el.feature}</p>
+                                    <div key={i} className="w-full text-white/80 px-4 py-3 rounded-lg bg-[#2a2a3d] border border-gray-600 flex items-center gap-2">
+                                        <p>⏳ {el.feature}</p>
+                                        {userSession.userData?.[0]?.role === "owner" && (
+                                            <div className="flex items-center gap-2">
+                                                <div className="hover:bg-green-500 transition duration-500 cursor-pointer rounded-[5px] p-2">
+                                                    <FcAcceptDatabase className="text-[25px]" />
+                                                </div>
+                                                <div onClick={() => handleRemoveFeature(el.id)} className="hover:bg-red-500 hover:text-white text-red-500 transition duration-500 cursor-pointer rounded-[5px] p-2">
+                                                    <CiCircleRemove className="text-[25px]" />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 ))}
                             </div>
                         </div>
@@ -231,9 +285,18 @@ export default function CoreHub({ show, setShow }: { show: boolean, setShow: (v:
                             </div>
                             <div className="flex flex-col items-center gap-3 w-full">
                                 {allSuggest.map((el, i) => (
-                                    <div className="w-full text-white/80 px-4 py-3 rounded-lg bg-[#2a2a3d] border border-gray-600 flex flex-col gap-2" key={i}>
-                                        <p>⏳ {el.suggest}</p>
-                                        <p className="text-[12px]">@{el.username}</p>
+                                    <div className="w-full text-white/80 px-4 py-3 rounded-lg bg-[#2a2a3d] border border-gray-600 flex items-center justify-between gap-2" key={i}>
+                                        <div className="flex flex-col gap-2">
+                                            <p>⏳ {el.suggest}</p>
+                                            <p className="text-[12px]">@{el.username}</p>
+                                        </div>
+                                        {userSession.userData?.[0]?.user_id === el.user_id && (
+                                            <div className="flex items-center justify-between gap-2">
+                                                <div onClick={() => handleRemoveSuggest(el.id)} className="hover:bg-red-500 hover:text-white text-red-500 transition duration-500 cursor-pointer rounded-[5px] p-2">
+                                                    <CiCircleRemove className="text-[25px]" />
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
