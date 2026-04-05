@@ -11,8 +11,8 @@ export async function POST(req: Request) {
     
     if ( !text ) return NextResponse.json({ success: false, error: "Aucune feature renseignée !" }, { status: 400 })
 
-    await sql`INSERT INTO features (feature) VALUES (${text})`
-    return NextResponse.json({ success: true })
+    const newFeature = await sql`INSERT INTO features (feature) VALUES (${text}) RETURNING *`
+    return NextResponse.json(newFeature[0])
 }
 
 export async function DELETE(req: Request) {
