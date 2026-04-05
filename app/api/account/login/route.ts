@@ -7,13 +7,13 @@ export async function POST(req: Request) {
     try {
         const { username, password } = await req.json()
 
-        if (typeof username !== "string" || typeof password !== "string" || !username || !password) return NextResponse.json({ error: "Champ(s) manquant(s) !" }, { status: 400 })
+        if (typeof username !== "string" || typeof password !== "string" || !username || !password) return NextResponse.json({ success: false, error: "Champ(s) manquant(s) !" }, { status: 400 })
 
         const user = await sql`SELECT user_id, password FROM users WHERE username = ${username}`
         const hash = user[0].password || "$2a$10$invalidhashinvalidhashinvalidhashinv"
         const isGoodPassword = await bcrypt.compare(password, hash)
 
-        if (!user[0] || !isGoodPassword) return NextResponse.json({ error: "Erreur d'identification" }, { status: 401 })
+        if (!user[0] || !isGoodPassword) return NextResponse.json({ success: false, error: "Erreur d'identification" }, { status: 401 })
 
         const sessionId = generateSessionId()
 
@@ -32,6 +32,6 @@ export async function POST(req: Request) {
 
         return res
     } catch (err: any) {
-        return NextResponse.json({ error: "Erreur interne du serveur" }, { status: 500 })
+        return NextResponse.json({ success: false, error: "Erreur interne du serveur" }, { status: 500 })
     }
 }

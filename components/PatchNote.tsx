@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { FaPlusSquare } from "react-icons/fa"
 import { MdAdminPanelSettings } from "react-icons/md"
+import { useNotif } from "./NotifProvider"
 
 type User = {
     user_id: number
@@ -14,6 +15,8 @@ type User = {
 }
 
 export default function PatchNote({ show, setShow }: { show: boolean, setShow: (v: boolean) => void }) {
+    const { showNotif } = useNotif()
+
     const [paperState, setPaperState] = useState(0)
     const [userSession, setUserSession] = useState<{ userData: User[] }>({ userData: [] })
 
@@ -28,6 +31,12 @@ export default function PatchNote({ show, setShow }: { show: boolean, setShow: (
         { title: "Création du panel admin" },
     ]
 
+    const suggest = [
+        { title: "Création des comptes" },
+        { title: "Login fonctionnel" },
+        { title: "Création du panel admin" },
+    ]
+
     useEffect(() => {
         async function getSession() {
             const res = await fetch("/api/session", {
@@ -36,7 +45,8 @@ export default function PatchNote({ show, setShow }: { show: boolean, setShow: (
             })
 
             if (!res.ok) {
-                console.error('Impossible de GET la session')
+                const err = await res.text()
+                showNotif(err, "error");
                 return
             }
             setUserSession(await res.json())
@@ -55,17 +65,18 @@ export default function PatchNote({ show, setShow }: { show: boolean, setShow: (
     if (!show) return null
 
     return (
-        <div id="overlay" className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+        <div id="overlay" className=" fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
             <div className="w-full max-w-md bg-[#1e1e2f] border border-gray-700 rounded-2xl shadow-2xl p-6 animate-fadeIn">
                 <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center gap-5">
                         <button onClick={() => setPaperState(0)} className={`${paperState === 0 ? "bg-[#2a2a3d]" : ""} rounded-md px-3 py-1 text-white hover:text-white/60 transition cursor-pointer`}>PatchNotes</button>
                         <button onClick={() => setPaperState(1)} className={`${paperState === 1 ? "bg-[#2a2a3d]" : ""} rounded-md px-3 py-1 text-white hover:text-white/60 transition cursor-pointer`}>Features</button>
+                        <button onClick={() => setPaperState(2)} className={`${paperState === 2 ? "bg-[#2a2a3d]" : ""} rounded-md px-3 py-1 text-white hover:text-white/60 transition cursor-pointer`}>Suggestions</button>
                     </div>
                     <div>
                         {userSession.userData?.[0]?.role === "owner" ? (
                             <div className="flex items-center gap-3">
-                                <FaPlusSquare className="text-[22px] text-white/40 hover:text-white/70 transition duration-500 cursor-pointer"/>
+                                <FaPlusSquare className="text-[22px] text-white/40 hover:text-white/70 transition duration-500 cursor-pointer" />
                                 <button onClick={() => setShow(false)} className="text-gray-400 hover:text-white transition cursor-pointer">✕</button>
                             </div>
                         ) : (
@@ -99,6 +110,18 @@ export default function PatchNote({ show, setShow }: { show: boolean, setShow: (
                                 {features.map((el, i) => (
                                     <p key={i} className="text-white/80">⏳ {el.title}</p>
                                 ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {paperState === 2 && (
+                        <div className="w-full">
+                            <h2 className="text-lg font-bold text-white mb-2">Vos suggestions</h2>
+                            <div className="px-4 py-3 rounded-lg bg-[#2a2a3d] border border-gray-600">
+                                {/* {suggest.map((el, i) => (
+                                    <p key={i} className="text-white/80">⏳ {el.title}</p>
+                                ))} */}
+                                <p className="text-white/80">En cours de développement..</p>
                             </div>
                         </div>
                     )}

@@ -4,8 +4,10 @@ import { useState } from "react";
 import { BsArrowRight } from "react-icons/bs";
 import { MdAccountBox } from "react-icons/md";
 import { useRouter } from 'next/navigation'
+import { useNotif } from "@/components/NotifProvider"
 
 export default function Home() {
+    const { showNotif } = useNotif()
     const [credentials, setCredentials] = useState({ username: "", password: "" })
     const router = useRouter();
 
@@ -18,8 +20,8 @@ export default function Home() {
         })
 
         if (!res.ok) {
-            const text = await res.text()
-            alert(text)
+            const err = await res.json()
+            showNotif(err.error, "error")           
             return
         }
 

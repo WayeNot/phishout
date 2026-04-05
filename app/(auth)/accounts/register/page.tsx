@@ -5,8 +5,11 @@ import { BsArrowRight } from "react-icons/bs";
 import { MdAccountBox } from "react-icons/md";
 
 import { useRouter } from 'next/navigation'
+import { useNotif } from "@/components/NotifProvider";
 
 export default function Home() {
+    const { showNotif } = useNotif()
+    
     const [credentials, setCredentials] = useState({ username: "", mail: "", password: "" })
     const router = useRouter();
 
@@ -20,14 +23,18 @@ export default function Home() {
 
     const handleRegister = async (e: any) => {
         e.preventDefault();
-        if (!validateEmail()) return alert("Mauvais format d'adresse mail !");
+        if (!validateEmail()) return showNotif("Mauvais format d'adresse mail !", "error");
         const res = await fetch("/api/account/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username: credentials.username, mail: credentials.mail, password: credentials.password })
         })
 
-        if (!res.ok) return
+        if (!res.ok) {
+            const err = await res.text()
+            showNotif(err, "error");
+            return
+        }
         router.push("/home")
     }
 

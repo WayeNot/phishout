@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useNotif } from "./NotifProvider"
 
 type User = {
     user_id: number
@@ -11,6 +12,8 @@ type User = {
 }
 
 export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
+    const { showNotif } = useNotif()
+    
     const [panelTab, setPanelTab] = useState(0)
 
     const [users, setUsers] = useState<User[]>([])
@@ -22,7 +25,8 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
             headers: { "Content-Type": "application/json" },
         })
         if (!res.ok) {
-            console.error('Impossible de GET la session')
+            const err = await res.text()
+            showNotif(err, "error");
             return
         }
         const data = await res.json()
@@ -58,7 +62,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                 </div>
                 {panelTab === 1 && (
                     <div className="w-full">
-                        {/* <input value={searchUser} onChange={(e) => setSearchUser(e.target.value)} type="text" placeholder="Rechercher un utilisateur" className="mb-5 w-5/20 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none text-sm sm:text-base p-2" /> */}
+                        {/* <input value={searchUser} onChange={(e) => setSearchUser(e.target.va lue)} type="text" placeholder="Rechercher un utilisateur" className="mb-5 w-5/20 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none text-sm sm:text-base p-2" /> */}
                         <div className="flex items-center gap-3 w-full">
                             {Array.isArray(users) && users.map((el) => (
                                 <div onClick={() => setEditUser(el.user_id)} key={el.user_id} className="border border-gray-600 text-white/40 rounded-[7px] w-1/10 py-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer">
