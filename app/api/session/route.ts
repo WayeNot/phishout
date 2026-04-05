@@ -1,6 +1,6 @@
 'use server'
 import { cookies } from 'next/headers'
-import { getUserData, getUserIdBySessionId } from '../user/route'
+import { getUserData, getUserIdBySessionId } from '@/lib/session';
 import { sql } from '@/lib/db'
 
 export async function GET() {
