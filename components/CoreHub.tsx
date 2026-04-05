@@ -14,6 +14,14 @@ type User = {
     created_at: string
 }
 
+type Suggest = {
+    id: number
+    user_id: number
+    suggest: string
+    username: string
+    created_at: string
+}
+
 export default function CoreHub({ show, setShow }: { show: boolean, setShow: (v: boolean) => void }) {
     const { showNotif } = useNotif()
 
@@ -21,7 +29,7 @@ export default function CoreHub({ show, setShow }: { show: boolean, setShow: (v:
     const [userSession, setUserSession] = useState<{ userData: User[] }>({ userData: [] })
     const [addSuggest, setAddSuggest] = useState(false)
     const [suggestText, setSuggestText] = useState("")
-    const [allSuggest, setAllSuggest] = useState([])
+    const [allSuggest, setAllSuggest] = useState<Suggest[]>([])
 
     const patchnote = [
         { title: "05/04/2026", patch: [{ text: "Déconnexion fonctionnel" }, { text: "Création de compte terminé" }] },
