@@ -2,14 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useNotif } from "./NotifProvider"
-
-type User = {
-    user_id: number
-    username: string
-    email: string
-    role: string
-    created_at: string
-}
+import { User } from "@/lib/types"
 
 export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const { showNotif } = useNotif()

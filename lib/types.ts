@@ -25,3 +25,20 @@ export type Suggest = {
     username: string
     created_at: string
 }
+
+export type challenges = {
+    id: number
+    name: string
+    slug: string[]
+    category: string
+    is_public: boolean
+}
+
+export type flag_list = {
+    title: string
+    flag: string
+    format: string
+    description: string
+    indice: string
+    
+}
