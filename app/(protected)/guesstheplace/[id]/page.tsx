@@ -63,6 +63,7 @@ export default function Page() {
                 )}
                 <div className='w-fit'>
                     <h2 className="text-white/60 text-xl sm:text-3xl italic text-center">Guess The Place - {guesstheplace?.title}</h2>
+                    <p className='text-center my-2 text-white/40'>Difficulté : {guesstheplace?.difficulty}</p>
                     <hr className="w-full text-white my-3" />
                 </div>
                 <p className="text-center w-full sm:w-2/3 lg:w-1/2 text-white/40 text-sm sm:text-base leading-relaxed">{guesstheplace?.description}</p>

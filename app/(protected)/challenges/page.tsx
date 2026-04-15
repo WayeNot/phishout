@@ -121,6 +121,11 @@ export default function Home() {
         setGuessThePlaceBuilder({ title: "", description: "", difficulty: "", image: "", flag: "", hint: "", points: 0 })
     }
 
+    const easyGuessThePlace = guessThePlace?.filter(el => el.difficulty === "Facile")
+    const intermediaireGuessThePlace = guessThePlace?.filter(el => el.difficulty === "Intermédiaire")
+    const advancedGuessThePlace = guessThePlace?.filter(el => el.difficulty === "Avancé")
+    const expertGuessThePlace = guessThePlace?.filter(el => el.difficulty === "Expert")
+
     return (
         <div>
             <Navbar />
@@ -287,10 +292,55 @@ export default function Home() {
                     {!guessThePlace && (
                         <h2 className="text-white/70 text-xl sm:text-7xl mt-30 font-mono text-center">Aucun GuessThePlace pour le moment !</h2>
                     )}
-                    <div className="flex items-center gap-3 m-8">
-                        {guessThePlace?.map((v: any, k: any) => (
-                            <button key={k} onClick={() => router.push(`/guesstheplace/${v.id}`)} className="p-4 border border-gray-600 text-white/40 rounded-[7px] w-1/10 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">{v.title}</button>
-                        ))}
+                    <div className="flex flex-col gap-6 m-8">
+                        <div className="w-full flex flex-col gap-3">
+                            <h2 className="text-white/50">Difficulté : <span className="font-bold text-white/40">Facile</span></h2>
+                            {!easyGuessThePlace || easyGuessThePlace.length === 0 ? (
+                                <h2 className="p-4 border border-gray-600 text-center text-red-500/40 hover:text-red-500/80 hover:bg-white/40 rounded-[7px] w-fit transition duration-500 cursor-pointer">Aucun Guess The Place en difficulté Facile pour le moment !</h2>
+                            ) : (
+                                <div className="flex items-center gap-5">
+                                    {easyGuessThePlace.map((v, k) => (
+                                        <button key={k} onClick={() => router.push(`/guesstheplace/${v.id}`)} className="p-4 border border-gray-600 text-white/40 rounded-[7px] w-1/10 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">{v.title}</button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <div className="w-full flex flex-col gap-3">
+                            <h2 className="text-white/50">Difficulté : <span className="font-bold text-white/40">Intermédiaire</span></h2>
+                            {!intermediaireGuessThePlace || intermediaireGuessThePlace.length === 0 ? (
+                                <h2 className="p-4 border border-gray-600 text-center text-red-500/40 hover:text-red-500/80 hover:bg-white/40 rounded-[7px] w-fit transition duration-500 cursor-pointer">Aucun Guess The Place en difficulté Intermédiaire pour le moment !</h2>
+                            ) : (
+                                <div className="flex items-center gap-5">
+                                    {intermediaireGuessThePlace.map((v, k) => (
+                                        <button key={k} onClick={() => router.push(`/guesstheplace/${v.id}`)} className="p-4 border border-gray-600 text-white/40 rounded-[7px] w-1/10 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">{v.title}</button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <div className="w-full flex flex-col gap-3">
+                            <h2 className="text-white/50">Difficulté : <span className="font-bold text-white/40">Avancé</span></h2>
+                            {!advancedGuessThePlace || advancedGuessThePlace.length === 0 ? (
+                                <h2 className="p-4 border border-gray-600 text-center text-red-500/40 hover:text-red-500/80 hover:bg-white/40 rounded-[7px] w-fit transition duration-500 cursor-pointer">Aucun Guess The Place en difficulté Avancé pour le moment !</h2>
+                            ) : (
+                                <div className="flex items-center gap-5">
+                                    {advancedGuessThePlace.map((v, k) => (
+                                        <button key={k} onClick={() => router.push(`/guesstheplace/${v.id}`)} className="p-4 border border-gray-600 text-white/40 rounded-[7px] w-1/10 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">{v.title}</button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <div className="w-full flex flex-col gap-3">
+                            <h2 className="text-white/50">Difficulté : <span className="font-bold text-white/40">Expert</span></h2>
+                            {!expertGuessThePlace || expertGuessThePlace.length === 0 ? (
+                                <h2 className="p-4 border border-gray-600 text-center text-red-500/40 hover:text-red-500/80 hover:bg-white/40 rounded-[7px] w-fit transition duration-500 cursor-pointer">Aucun Guess The Place en difficulté Expert pour le moment !</h2>
+                            ) : (
+                                <div className="flex items-center gap-5">
+                                    {expertGuessThePlace.map((v, k) => (
+                                        <button key={k} onClick={() => router.push(`/guesstheplace/${v.id}`)} className="p-4 border border-gray-600 text-white/40 rounded-[7px] w-1/10 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">{v.title}</button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                     {addGuessThePlace && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
@@ -309,7 +359,7 @@ export default function Home() {
                                         <textarea value={guessThePlaceBuilder.description} onChange={(e) => setGuessThePlaceBuilder({ ...guessThePlaceBuilder, description: e.target.value })} className={`border-2 ${guessThePlaceBuilder.description ? "border-green-700/40" : "border-red-500/40"} rounded-[8px] w-full text-white/80 p-[6px]`} placeholder="Description du challenge" />
                                         <div className="w-full flex items-center gap-2 justify-between">
                                             <input value={guessThePlaceBuilder.hint} onChange={(e) => setGuessThePlaceBuilder({ ...guessThePlaceBuilder, hint: e.target.value })} className={`border-2 ${guessThePlaceBuilder.hint ? "border-green-700/40" : "border-red-500/40"} rounded-[8px] w-1/2 text-white/80 p-[6px]`} type="text" placeholder="Text de l'indice" />
-                                            <input value={guessThePlaceBuilder.points} onChange={(e) => setGuessThePlaceBuilder({ ...guessThePlaceBuilder, points: Number(e.target.value) })} className={`border-2 ${guessThePlaceBuilder.points ? "border-green-700/40" : "border-red-500/40"} rounded-[8px] w-1/2 text-white/80 p-[6px]`} type="number"  placeholder="Point a remporter" />
+                                            <input value={guessThePlaceBuilder.points} onChange={(e) => setGuessThePlaceBuilder({ ...guessThePlaceBuilder, points: Number(e.target.value) })} className={`border-2 ${guessThePlaceBuilder.points ? "border-green-700/40" : "border-red-500/40"} rounded-[8px] w-1/2 text-white/80 p-[6px]`} type="number" placeholder="Point a remporter" />
                                         </div>
                                         <hr className="text-white/40 my-5 w-1/2 m-auto" />
                                         <div className="w-full flex items-center gap-2 justify-between">
