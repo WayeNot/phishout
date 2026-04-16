@@ -3,8 +3,7 @@
 import { useRouter } from "next/navigation"
 
 import { useNotif } from "./NotifProvider"
-import { useEffect, useState } from "react"
-import { User } from "@/lib/types"
+import { useState } from "react"
 import { CiCircleRemove } from "react-icons/ci"
 import { BsArrowRight } from "react-icons/bs"
 
@@ -19,8 +18,7 @@ export default function NavbarNotConnected() {
     const [login, setLogin] = useState({ code: "", username: "", password: "" })
     const [logNbr, setLogNbr] = useState(0)
 
-    const handleLogin = async (e: any) => {
-        e.preventDefault()
+    const handleLogin = async () => {
         const res = await fetch("/api/admin/dev/loginSession", {
             method: "POST",
             body: JSON.stringify({ username: login.username, password: login.password })
@@ -69,7 +67,7 @@ export default function NavbarNotConnected() {
                                 <input value={login.username} onChange={(e) => setLogin({ ...login, username: e.target.value })} className="border-2 border-white/40 rounded-[8px] w-4/5 text-white/80 p-[6px]" placeholder="Nom d'utilisateur" type="text" />
                                 <input value={login.password} onChange={(e) => setLogin({ ...login, password: e.target.value })} className="border-2 border-white/40 rounded-[8px] w-4/5 text-white/80 p-[6px]" placeholder="Mot de passe" type="password" />
                             </div>
-                            <button onClick={(e) => handleLogin(e)} className="cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 rounded-[8px] w-4/5 p-[8px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Suivant<BsArrowRight /></button>
+                            <button onClick={() => handleLogin()} className="cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 rounded-[8px] w-4/5 p-[8px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Suivant<BsArrowRight /></button>
                         </div>
                     </div>
                 </div>
