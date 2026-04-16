@@ -1,21 +1,13 @@
 "use client";
-import Navbar from "@/components/Navbar";
+
 import { useNotif } from "@/components/NotifProvider"
+import { Flag } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { FaLightbulb } from "react-icons/fa";
 
-interface Flag {
-    nbr: number;
-    name: string;
-    flag: string;
-    flag_format: string;
-    description: string;
-    hint: string;
-    isHintShow: boolean;
-}
-
 export default function Home() {
     const { showNotif } = useNotif()
+    
     const flags: Flag[] = [
         { nbr: 1, name: "Nom de l'image ?", flag: "free-criquet.png", flag_format: "x", description: "Un fichier intéressante est cachée dans le container. Quel est son nom exact (avec l'extension) ?", hint: "Parfois, un mot de passe faible n'est pas suffisant.", isHintShow: false },
         { nbr: 2, name: "Nom du compte ?", flag: "criquet_sauvage4", flag_format: "x", description: "Un nom de compte est dissimulé dans une image. Parviendrez-vous à le retrouver ?", hint: "L'équipe qui a saisi le serveur à découvert la présence d'un logiciel de stéganographie.", isHintShow: false },
@@ -81,7 +73,6 @@ export default function Home() {
 
     return (
         <div className="flex flex-col min-h-screen bg-[#212529]">
-            <Navbar />
             <div className="py-10 sm:py-15 px-4 bg-gray-800 flex flex-col items-center justify-center gap-5">
                 <h2 className="text-white/60 text-xl sm:text-3xl italic text-center">CTF PhishOut</h2>
                 <hr className="w-2/4 text-white" />

@@ -1,22 +1,20 @@
 "use client";
 
-import Navbar from "@/components/Navbar";
-
 export default function Home() {
+    const tools = [
+        { name: "Tools" },
+        { name: "GEOINT" },
+        { name: "SOCMINT" },
+        { name: "OPSEC" },
+    ]
     return (
         <div>
-            <Navbar/>
-            <h2 className="text-white/70 text-xl text-[70px] mt-30 ml-20 font-mono text-center font-bold">Tools</h2>
-            <div className="border-1 border-white/70 mt-5 ml-20 mr-20"></div>
-            <h2 className="text-white/70 text-xl text-[40px] mt-5 ml-20 font-mono text-left">GEOINT</h2>
-            <div className="border-1 border-white/70 mt-5 ml-20 mr-20"></div>
-            <h2 className="text-white/70 text-xl text-[40px] mt-5 ml-20 font-mono text-left">SOCMINT</h2>
-            <div className="border-1 border-white/70 mt-5 ml-20 mr-20"></div>
-            <h2 className="text-white/70 text-xl text-[40px] mt-5 ml-20 font-mono text-left ">OPSEC</h2>
-
-            <div>
-
-            </div>
+            {tools.map((v, k) => (
+                <div key={k}>
+                    <h2 className="text-white/70 text-xl text-[30px] mt-10 ml-20 font-mono font-bold">{v.name}</h2>
+                    <hr className="mt-5 mx-20 text-white/70" />
+                </div>
+            ))}
         </div>
     );
 }

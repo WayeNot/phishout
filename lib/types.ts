@@ -7,24 +7,7 @@ export type User = {
     created_at: string
 }
 
-export type PatchNote = {
-    id: number
-    feature: string
-    created_at: string
-}
-
-export type Features = {
-    id: number
-    feature: string
-}
-
-export type Suggest = {
-    id: number
-    user_id: number
-    suggest: string
-    username: string
-    created_at: string
-}
+export type Role = "owner" | "admin" | "dev" | "contributor" | "user"
 
 export type challenges = {
     id: number
@@ -51,4 +34,14 @@ export type guessTheP = {
     flag: string
     hint: string
     points: number
+}
+
+export interface Flag {
+    nbr: number;
+    name: string;
+    flag: string;
+    flag_format: string;
+    description: string;
+    hint: string;
+    isHintShow: boolean;
 }

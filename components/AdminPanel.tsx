@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { useNotif } from "./NotifProvider"
 import { User } from "@/lib/types"
 import { IoMdCheckboxOutline } from "react-icons/io"
-import { div } from "motion/react-client"
 import { MdCheckBoxOutlineBlank } from "react-icons/md"
 
 export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
@@ -30,18 +29,33 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         setUsers(data)
     }
 
+    const getMaintenance = async () => {
+        const req = await fetch("/api/admin/logsSec/maintenance", {
+            method: "GET"
+        })
+        if (!req.ok) {
+            showNotif(await req.text())
+            return
+        }
+        const data = await req.json()
+        console.log(data);
+        
+        setInMaintenance(data)
+    }
+
     useEffect(() => {
         if (panelTab === 1) {
             getAllUser()
+        } else if (panelTab === 2) {
+            getMaintenance()
         }
     }, [panelTab])
 
     const setMaintenance = async () => {
         const req = await fetch("/api/admin/logsSec/maintenance", {
             method: "POST",
-            body: JSON.stringify(inMaintenance)
+            body: JSON.stringify({ inMaintenance: !inMaintenance})
         })
-
         if (!req.ok) {
             showNotif(await req.text())
             return
@@ -58,15 +72,15 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                 <hr className="my-5 border-gray-600" />
                 <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center justify-center gap-5">
-                        <button onClick={() => { getAllUser(); setPanelTab(0) }} className={`${panelTab === 0 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 transition cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Dashboard</button>
-                        <button onClick={() => { getAllUser(); setPanelTab(1) }} className={`${panelTab === 1 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 transition cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Gestion des utilisateurs</button>
-                        <button onClick={() => setPanelTab(2)} className={`${panelTab === 2 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 transition cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Gestion des CTF</button>
-                        <button onClick={() => setPanelTab(3)} className={`${panelTab === 3 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 transition cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Gestion des challenges</button>
-                        <button onClick={() => setPanelTab(4)} className={`${panelTab === 4 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 transition cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Soumission des flags</button>
-                        <button onClick={() => setPanelTab(5)} className={`${panelTab === 5 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 transition cursor-pointer transition duration-500 bg-[#2a2a3d]`}>ScoreBoard</button>
-                        <button onClick={() => setPanelTab(6)} className={`${panelTab === 6 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 transition cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Gestion des annonces</button>
-                        <button onClick={() => setPanelTab(7)} className={`${panelTab === 7 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 transition cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Paramètres</button>
-                        <button onClick={() => setPanelTab(8)} className={`${panelTab === 8 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 transition cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Logs & Sécurité</button>
+                        <button onClick={() => { getAllUser(); setPanelTab(0) }} className={`${panelTab === 0 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Dashboard</button>
+                        <button onClick={() => { getAllUser(); setPanelTab(1) }} className={`${panelTab === 1 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Gestion des utilisateurs</button>
+                        <button onClick={() => setPanelTab(2)} className={`${panelTab === 2 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Gestion des CTF</button>
+                        <button onClick={() => setPanelTab(3)} className={`${panelTab === 3 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Gestion des challenges</button>
+                        <button onClick={() => setPanelTab(4)} className={`${panelTab === 4 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Soumission des flags</button>
+                        <button onClick={() => setPanelTab(5)} className={`${panelTab === 5 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>ScoreBoard</button>
+                        <button onClick={() => setPanelTab(6)} className={`${panelTab === 6 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Gestion des annonces</button>
+                        <button onClick={() => setPanelTab(7)} className={`${panelTab === 7 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Paramètres</button>
+                        <button onClick={() => { getMaintenance(); setPanelTab(8) }} className={`${panelTab === 8 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Logs & Sécurité</button>
                     </div>
                     <button onClick={closePanel} className="text-gray-400 hover:text-white cursor-pointer transition duration-500">✕</button>
                 </div>

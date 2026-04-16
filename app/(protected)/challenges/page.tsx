@@ -1,6 +1,5 @@
 "use client";
 
-import Navbar from "@/components/Navbar";
 import { useNotif } from "@/components/NotifProvider";
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from "react";
@@ -8,6 +7,7 @@ import { challenges, flag_list, guessTheP, User } from "@/lib/types"
 import { BiPlusCircle, BiPlusMedical } from "react-icons/bi";
 import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle } from "react-icons/io";
 import { BsArrowRightCircle } from "react-icons/bs";
+import { staff_role } from "@/lib/config";
 
 const difficultyBtn = [
     { name: "Facile", color: "text-green-400" },
@@ -30,8 +30,7 @@ export default function Home() {
     const router = useRouter();
     const { showNotif } = useNotif()
 
-    const [userSession, setUserSession] = useState<{ userData: User | null }>({ userData: null })
-    const [sessionLoaded, setSessionLoaded] = useState(false)
+    const [userSession, setUserSession] = useState<User | null>(null)
 
     const [addChallenge, setAddChallenge] = useState(false)
     const [allChallenges, setAllChallenges] = useState<challenges[]>([])
@@ -48,14 +47,14 @@ export default function Home() {
     const [panelTab, setPanelTab] = useState(0)
 
     useEffect(() => {
-        if (sessionLoaded) return
         async function getSession() {
             const res = await fetch("/api/auth/session")
-            const data = await res.json()
-            setUserSession(data)
-            setSessionLoaded(true)
+            if (!res.ok) {
+                showNotif(await res.text())
+                return
+            }
+            setUserSession(await res.json())
         }
-
         getSession()
     }, [])
 
@@ -126,9 +125,7 @@ export default function Home() {
     const advancedGuessThePlace = guessThePlace?.filter(el => el.difficulty === "Avancé")
     const expertGuessThePlace = guessThePlace?.filter(el => el.difficulty === "Expert")
 
-    const postCtf = async () => {
-        console.log(builderValues);
-        
+    const postCtf = async () => {        
         const res = await fetch("/api/challenges/ctf", {
             method: "POST",
             body: JSON.stringify(builderValues)
@@ -143,14 +140,13 @@ export default function Home() {
 
     return (
         <div>
-            <Navbar />
             <div className="flex items-center gap-5 m-8">
                 <button onClick={() => setPanelTab(0)} className={`${panelTab === 0 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 transition cursor-pointer transition duration-500 bg-[#2a2a3d]`}>🚩 Nos CTF</button>
                 <button onClick={() => getGuessThePlace()} className={`${panelTab === 1 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 transition cursor-pointer transition duration-500 bg-[#2a2a3d]`}>📍 GEOINT</button>
             </div>
             {panelTab === 0 && (
                 <div>
-                    {userSession.userData?.role === "owner" && (
+                    {userSession?.role && staff_role.includes(userSession.role) && (
                         <button onClick={() => setAddChallenge(true)} className="p-4 m-8 border border-gray-600 text-white/40 rounded-[7px] w-1/10 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center flex items-center justify-center gap-2 font-bold"><BiPlusCircle />Créer un CTF</button>
                     )}
                     <div className="flex items-center gap-3 m-8">
@@ -297,7 +293,7 @@ export default function Home() {
             )}
             {panelTab === 1 && (
                 <div>
-                    {userSession.userData?.role === "owner" && (
+                    {userSession?.role && staff_role.includes(userSession.role) && (
                         <button onClick={() => setAddGuessThePlace(true)} className="p-4 m-8 border border-gray-600 text-white/40 rounded-[7px] max-w-2/10 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center flex items-center justify-center gap-2 font-bold"><BiPlusCircle />Ajouter un GuessThePlace</button>
                     )}
                     {!guessThePlace && (

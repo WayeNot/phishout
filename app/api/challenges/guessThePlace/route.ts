@@ -10,7 +10,6 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const data = await req.json()
-        console.log(data);
 
         const { title, description, difficulty, image, flag, hint, points } = data
 

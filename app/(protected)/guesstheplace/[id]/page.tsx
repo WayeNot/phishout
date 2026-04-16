@@ -1,5 +1,5 @@
 "use client"
-import Navbar from '@/components/Navbar'
+
 import { useNotif } from '@/components/NotifProvider'
 import { guessTheP } from '@/lib/types'
 import { useParams } from 'next/navigation'
@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { CiCircleCheck, CiCircleRemove } from 'react-icons/ci'
 import { FaLightbulb } from 'react-icons/fa'
-import { IoAlertCircleOutline, IoWarningSharp } from 'react-icons/io5'
+import { IoWarningSharp } from 'react-icons/io5'
 
 export default function Page() {
     const params = useParams();
@@ -56,7 +56,6 @@ export default function Page() {
 
     return (
         <div className="flex flex-col bg-[#212529]">
-            <Navbar />
             <div className="py-5 sm:py-15 px-4 bg-gray-800 flex flex-col items-center justify-center gap-5">
                 {isFlagFind && (
                     <p className="w-fit px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center gap-3"><span className="text-green-600"><CiCircleCheck /></span>Vous avez déjà trouvé le flag ! ( {`${guesstheplace?.title}{${guesstheplace?.flag}}`} )</p>
