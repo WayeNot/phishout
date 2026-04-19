@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import AdminPanel from "./AdminPanel"
 import { useNotif } from "./NotifProvider"
 import { User } from "@/lib/types"
-import { staff_role } from "@/lib/config"
+import { default_pp, staff_role, statusColor } from "@/lib/config"
 import { TbCoinRupeeFilled } from "react-icons/tb"
 import { GiMusicSpell } from "react-icons/gi"
 import { useApi } from "@/hooks/useApi"
@@ -74,6 +74,13 @@ export default function Navbar() {
                             <GiMusicSpell className="text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600" />
                         </div>
                     )}
+                </div>
+
+                <div className="flex items-center">
+                    <div className="flex items-center gap-5 font-bold italic text-white/40">
+                        <Link href={`/user/${userSession?.user_id}`} className="flex items-center gap-3 hover:text-white/70 transition duration-500"><img src={userSession?.pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-12 rounded-[25%] bg-center bg-cover bg-no-repeat ${statusColor[userSession?.status] || ""}`}/><span className="mx-2">-</span>{userSession?.username}</Link>
+                    </div>
+                    <p className="text-white/40 text-[20px] mx-5"> | </p>
                     <p className="flex items-center gap-3 text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600"><TbCoinRupeeFilled />{userSession?.coin}</p>
                 </div>
 
@@ -83,7 +90,6 @@ export default function Navbar() {
                     <Link href="/home" className="hover:text-white/70 transition duration-500">Accueil</Link>
                     <Link href="/tools" className="hover:text-white/70 transition duration-500">Tools</Link>
                     <Link href="/challenges" className="hover:text-white/70 transition duration-500">Nos challenges</Link>
-                    <Link href="/accounts" className="hover:text-white/70 transition duration-500">Mon compte</Link>
                     <MdExitToApp onClick={handleLogout} className="hover:text-red-400 cursor-pointer text-xl transition duration-500" />
                 </div>
             </nav>
