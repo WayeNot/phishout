@@ -21,6 +21,8 @@ export default function Home() {
 
     const userN = userSession?.username
 
+    console.log("Date : ", date);
+    
     return (
         <div>
             <h2 className="text-white/70 text-xl text-[70px] mt-45 ml-20 font-mono text-left font-bold">Welcome to your CTF platform.</h2>

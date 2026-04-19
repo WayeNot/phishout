@@ -1,7 +1,7 @@
 import { sql } from "@/lib/db"
 import { cookies } from "next/headers"
 
-export async function POST() {
+export async function POST () {
     const cookie = await cookies()
     const session_id = cookie.get("session_id")
     if (!session_id) return Response.json({ success: false, error: "Aucun cookie !" }, { status: 403 })

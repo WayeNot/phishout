@@ -1,3 +1,9 @@
+export type Status = "online" | "donotdisturb" | "inactive" | "offline"
+
+export type Role = "owner" | "admin" | "dev" | "contributor" | "user"
+
+export type transactions = "flag" | "geoint" | "daily" | "admin" | "penalty" | "shop"
+
 export type User = {
     user_id: number
     username: string
@@ -5,9 +11,11 @@ export type User = {
     password: string
     role: string
     created_at: string
+    coin: number
+    pp_url: string
+    status: Status
+    is_online: boolean
 }
-
-export type Role = "owner" | "admin" | "dev" | "contributor" | "user"
 
 export type challenges = {
     id: number

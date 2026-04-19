@@ -39,13 +39,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <body className="min-h-screen flex flex-col">
                 <NotifProvider>
 
-                    {user ? <Navbar/> : <NavbarNotConnected />}
+                    {!pathname.startsWith("/accounts") && (
+                        <div>
+                            {user ? <Navbar /> : <NavbarNotConnected />}
+                        </div>
+                    )}
+
 
                     <main className="flex-1">
                         {children}
                     </main>
 
-                    <Footer />
+                    {!pathname.startsWith("/accounts") && (
+                        <Footer />
+                    )}
 
                 </NotifProvider>
             </body>
