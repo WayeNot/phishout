@@ -6,7 +6,6 @@ import { MdAccountBox } from "react-icons/md";
 import { useRouter } from 'next/navigation'
 import { useNotif } from "@/components/NotifProvider"
 import { FaHatCowboy } from "react-icons/fa";
-import { data } from "motion/react-client";
 
 export default function Home() {
     const { showNotif } = useNotif()
@@ -14,7 +13,7 @@ export default function Home() {
     const router = useRouter();
 
     const handleLogin = async () => {
-        const res = await fetch("/api/auth/account/login", {
+        const res = await fetch("/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username: credentials.username, password: credentials.password })
@@ -35,7 +34,7 @@ export default function Home() {
     }
 
     const handleGuest = async () => {
-        const req = await fetch("/api/auth/account/guest", {
+        const req = await fetch("/api/auth/guest", {
             method: "POST"
         })
         if (!req.ok) {

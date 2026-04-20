@@ -1,16 +1,22 @@
 import { Role, Status } from "./types";
 
+export const owners = [
+    { name: "Timéo", linkedin: "https://www.linkedin.com/in/tim%C3%A9o-baffreau-le-roux-511a1a353/" },
+    { name: "Romain", linkedin: "https://www.linkedin.com/in/romain-guibert-2851a52bb/" },
+    { name: "Aymeric", linkedin: "https://www.linkedin.com/in/aymeric-beaune-9b81b0364/" },
+];
+
 export const staff_role = ["owner", "admin", "dev"];
 export const maitenance_role: Role[] = ["owner", "admin", "dev", "contributor"];
 
+export const maintenance_route = "/dev/maintenance"
+
 export const public_routes = [
-    "/home",
-    "/accounts/login",
-    "/accounts/register",
     "/dev/maintenance",
+    "/main"
 ]
 
-export const default_pp = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbm0xdXpnYW1vbGZiOXB5cDUweXBic3Z5enJ5b2M3aDN6Ynd5Nzk2dCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/adwsEJi5lQRXrgJNWL/giphy.gif"
+export const default_pp = "https://i.giphy.com/adwsEJi5lQRXrgJNWL.webp"
 
 export const statusColor: Record<Status, string> = {
     online: "border-green-500 border-3",

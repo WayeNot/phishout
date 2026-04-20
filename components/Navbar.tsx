@@ -6,53 +6,33 @@ import { MdAdminPanelSettings, MdCheckBoxOutlineBlank, MdExitToApp } from "react
 import { useRouter } from "next/navigation"
 
 import AdminPanel from "./AdminPanel"
-import { useNotif } from "./NotifProvider"
-import { User } from "@/lib/types"
 import { default_pp, staff_role, statusColor, statusColorHover } from "@/lib/config"
 import { TbCoinRupeeFilled } from "react-icons/tb"
 import { GiMusicSpell } from "react-icons/gi"
 import { useApi } from "@/hooks/useApi"
 import { IoMdCheckboxOutline } from "react-icons/io"
+import { useSession } from "@/hooks/userSession"
+import { FaFire } from "react-icons/fa"
 
 export default function Navbar() {
-    const router = useRouter()
-    const { showNotif } = useNotif()
     const { call } = useApi()
+    const { userSession } = useSession()
+
+    const router = useRouter()
 
     const [menuOpen, setMenuOpen] = useState(false)
-    const [userSession, setUserSession] = useState<User | null>(null)
     const [showAdminPanel, setShowAdminPanel] = useState(false)
     const [inMaintenance, setInMaintenance] = useState(false)
 
-    useEffect(() => {
-        async function getSession() {
-            const res = await fetch("/api/auth/session")
-            if (!res.ok) {
-                showNotif(await res.text())
-                return
-            }
-            setUserSession(await res.json())
-        }
-        getSession()
-    }, [])
-
     const handleLogout = async () => {
-        const res = await fetch("/api/auth/account/logout", {
-            method: "POST",
-        })
-        router.refresh()
-        if (!res.ok) {
-            const err = await res.json()
-            showNotif(err.error)
-            return
-        }
+        await call("/api/auth/logout", { method: "POST" })
         router.refresh()
         router.push("/")
     }
 
     useEffect(() => {
         const getMaintenance = async () => {
-            const data = await call("/api/admin/logsSec/maintenance", { method: "GET" })
+            const data = await call("/api/admin/maintenance")
             setInMaintenance(data)
         }
         setInterval(() => {
@@ -64,6 +44,9 @@ export default function Navbar() {
         <div>
             {inMaintenance && (
                 <h2 className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center"><IoMdCheckboxOutline /> - Site actuellement en maintenance !</h2>
+            )}
+            {!inMaintenance && userSession?.role && "guest".includes(userSession.role) && (
+                <Link href="/accounts/login" className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500"><FaFire className="text-orange-500" /> Connectez-vous pour sauvegarder votre progression<FaFire className="text-orange-500" /></Link>
             )}
             <nav className="flex items-center justify-between p-4 sm:mx-5">
                 <div className="flex items-center gap-5 text-white/40">

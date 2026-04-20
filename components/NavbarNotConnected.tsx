@@ -1,15 +1,14 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-
-import { useNotif } from "./NotifProvider"
 import { useState } from "react"
 import { CiCircleRemove } from "react-icons/ci"
 import { BsArrowRight } from "react-icons/bs"
+import { useApi } from "@/hooks/useApi"
 
 export default function NavbarNotConnected() {
 
-    const { showNotif } = useNotif()
+    const { call } = useApi()
     const router = useRouter();
 
     const [menuOpen, setMenuOpen] = useState(false)
@@ -18,15 +17,7 @@ export default function NavbarNotConnected() {
     const [login, setLogin] = useState({ code: "", username: "", password: "" })
 
     const handleLogin = async () => {
-        const res = await fetch("/api/admin/dev/loginSession", {
-            method: "POST",
-            body: JSON.stringify({ username: login.username, password: login.password })
-        })
-        if (!res.ok) {
-            const err = await res.json()
-            showNotif(err.error)
-            return
-        }
+        await call("/api/admin/sessions/dev", { method: "POST", body: JSON.stringify({ username: login.username, password: login.password }) })
         setDisplayLogin(false)
         router.refresh()
         router.push("/")

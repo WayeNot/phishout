@@ -14,8 +14,8 @@ export const useApi = () => {
 
             const data = await res.json()
 
-            if (!res.ok) {
-                throw new Error(data.error || "Erreur API")
+            if (!res.ok && data.error) {
+                throw new Error(data.error)
             }
 
             if (successMsg) {

@@ -11,3 +11,7 @@ export async function GET(user_id: any) {
         return new Response("DB Error", { status: 500 })
     }
 }
+
+export async function PATCH () {
+    console.log("Modification de l'utilisateur");
+}

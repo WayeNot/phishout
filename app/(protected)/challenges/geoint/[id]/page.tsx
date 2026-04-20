@@ -1,7 +1,9 @@
 "use client"
 
 import { useNotif } from '@/components/NotifProvider'
-import { guessTheP } from '@/lib/types'
+import { useApi } from '@/hooks/useApi'
+import { useSession } from '@/hooks/userSession'
+import { geoint } from '@/lib/types'
 import { useParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -10,10 +12,14 @@ import { FaLightbulb } from 'react-icons/fa'
 import { IoWarningSharp } from 'react-icons/io5'
 
 export default function Page() {
+    const { showNotif } = useNotif()
+    const { userSession } = useSession()
     const params = useParams();
     const router = useRouter();
-    const { showNotif } = useNotif()
-    const [guesstheplace, setGuessThePlace] = useState<guessTheP>()
+
+    const { call } = useApi()
+    
+    const [guesstheplace, setGuessThePlace] = useState<geoint>()
     const [displayImage, setDisplayImage] = useState(false)
     const [currentFlag, setCurrentFlag] = useState("")
     const [displayHint, setDisplayHint] = useState(false)
@@ -21,21 +27,11 @@ export default function Page() {
 
     useEffect(() => {
         if (!params?.id) return;
-        const getGTP = async () => {
-            const req = await fetch(`/api/challenges/guessThePlace/${params.id}`, {
-                method: "GET"
-            })
-            if (!req.ok) {
-                const err = await req.json()
-                showNotif(err.err, "error")
-                router.refresh()
-                router.push(`/challenges`)
-                return
-            }
-            const data = await req.json()
-            setGuessThePlace(data.data[0])
+        const getGeoint = async () => {
+            const data = await call(`/api/challenges/${params.id}?type=geoint`)
+            setGuessThePlace(data)
         }
-        getGTP()
+        getGeoint()
     }, [params.id])
 
     const backChallenges = () => {
@@ -49,7 +45,7 @@ export default function Page() {
 
     const handleValidate = async () => {
         if (currentFlag === `${guesstheplace?.title}{${guesstheplace?.flag}}`) {
-            const req = await fetch("/api/challenges/guesstheplace")
+            const req = await fetch("/api/challenges/geoint")
             showNotif("GG ! Vous avez trouvé le flag !", "success")
             setCurrentFlag("")
             setIsFlagFind(true)

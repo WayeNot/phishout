@@ -6,7 +6,7 @@ export async function GET() {
     return NextResponse.json(result[0].is_in_maintenance);
 }
 
-export async function POST(req: Request) {
+export async function PATCH(req: Request) {
     try {
         const { inMaintenance } = await req.json()
         await sql`UPDATE settings SET is_in_maintenance = ${inMaintenance}`;

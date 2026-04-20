@@ -1,12 +1,14 @@
 "use client";
 
 import { useNotif } from "@/components/NotifProvider"
+import { useSession } from "@/hooks/userSession";
 import { Flag } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { FaLightbulb } from "react-icons/fa";
 
 export default function Home() {
     const { showNotif } = useNotif()
+    const { userSession } = useSession()
     
     const flags: Flag[] = [
         { nbr: 1, name: "Nom de l'image ?", flag: "free-criquet.png", flag_format: "x", description: "Un fichier intéressante est cachée dans le container. Quel est son nom exact (avec l'extension) ?", hint: "Parfois, un mot de passe faible n'est pas suffisant.", isHintShow: false },

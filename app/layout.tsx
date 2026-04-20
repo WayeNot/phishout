@@ -9,21 +9,27 @@ import NavbarNotConnected from "@/components/NavbarNotConnected"
 import Footer from "@/components/Footer"
 import { NotifProvider } from "@/components/NotifProvider"
 import { User } from "@/lib/types"
+import { default_pp } from "@/lib/config"
+import { useRouter } from 'next/navigation'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<User | null>(null)
     const pathname = usePathname()
+    const router = useRouter();
+    const [user, setUser] = useState<User | null>(null)
 
     const getSession = async () => {
         try {
             const res = await fetch("/api/auth/session")
-
             if (!res.ok) {
-                setUser(null)
+                router.refresh()
+                router.push("/accounts/login")
                 return
             }
-
             const data = await res.json()
+            if (data.isGuest) {
+                setUser({ username: "Invité", status: "online", user_id: Date.now(), role: "guest", pp_url: default_pp, password: "", is_online: true, email: "guest@invite.com", coin: 9999, created_at: "" })
+                return
+            }
             setUser(data)
         } catch {
             setUser(null)
@@ -46,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     )}
 
 
-                    <main className="flex-1">
+                    <main className="flex-1 relative">
                         {children}
                     </main>
 

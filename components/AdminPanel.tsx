@@ -26,7 +26,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const [panelUser, setPanelUser] = useState(0)
 
     const getAllUser = async () => {
-        const req = await fetch("/api/auth/users")
+        const req = await fetch("/api/users")
         if (!req.ok) {
             const err = await req.json()
             showNotif(err.error)
@@ -36,7 +36,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     }
 
     const getMaintenance = async () => {
-        const data = await call("/api/admin/logsSec/maintenance", { method: "GET" })
+        const data = await call("/api/admin/maintenance")
         setInMaintenance(data)
     }
 
@@ -49,12 +49,12 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     }, [panelTab])
 
     const setMaintenance = async () => {
-        await call("/api/admin/logsSec/maintenance", { method: "POST", body: JSON.stringify({ inMaintenance: !inMaintenance }) }, inMaintenance ? "Maintenance terminée avec succès !" : "Maintenance activée avec succès !")
+        await call("/api/admin/maintenance", { method: "PATCH", body: JSON.stringify({ inMaintenance: !inMaintenance }) }, inMaintenance ? "Maintenance terminée avec succès !" : "Maintenance activée avec succès !")
         setInMaintenance(!inMaintenance)
     }
 
     const updateCoins = async (value: number, reason: string) => {
-        const data = await call(`/api/admin/users/coin/${value < 0 ? "remove" : "add"}`, { method: "POST", body: JSON.stringify({ user_id: editUser, value: Math.abs(value), reason: reason || "" }) }, "Nombre de coin bien mis à jour !")
+        const data = await call(`/api/users/${editUser}/coin/`, { method: "PATCH", body: JSON.stringify({ operation: `${value < 0 ? "remove_coin" : "add_coin"}`, value: Math.abs(value), reason: reason || "" }) }, "Nombre de coin bien mis à jour !")
         setUsers(prev => prev.map(user => user.user_id === editUser ? { ...user, coin: data.newSold } : user))
         setShowModal(null)
     }
@@ -74,12 +74,12 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
             return
         }
         setShowModal(null)
-        const data = await call("/api/admin/users/coin/set", { method: "POST", body: JSON.stringify({ user_id: editUser, value: Math.abs(num), reason: reason || "" }) }, "Nombre de coin set avec succès !")
+        const data = await call(`/api/users/${editUser}/coin`, { method: "PATCH", body: JSON.stringify({ operation: "set_coin", value: Math.abs(num), reason: reason || "" }) }, "Nombre de coin set avec succès !")
         setUsers(prev => prev.map(user => user.user_id === editUser ? { ...user, coin: data.newSold } : user))
     }
 
     const resetCoin = async (reason: string = "") => {
-        await call("/api/admin/users/coin/reset", { method: "POST", body: JSON.stringify({ user_id: editUser, reason: reason || "" }) }, "Nombre de coin reset avec succès !")
+        await call(`/api/users/${editUser}/coin`, { method: "PATCH", body: JSON.stringify({ operation: "reset_coin", value: 0, reason: reason || "" }) }, "Nombre de coin reset avec succès !")
         setUsers(prev => prev.map(user => user.user_id === editUser ? { ...user, coin: 0 } : user))
         setShowModal(null)
     }
@@ -173,7 +173,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         </div>
                     </div>
                 )}
-                {showModal === "set" && <InputNumber title="Modifier les coins" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { setCoins(input1, input2) }} input1={{ display: true, placeholder: "Nombre de coins", type: "number" }} input2={{ display: true, placeholder: "Raison" }}/>}
+                {showModal === "set" && <InputNumber title="Modifier les coins" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { setCoins(input1, input2) }} input1={{ display: true, placeholder: "Nombre de coins", type: "number" }} input2={{ display: true, placeholder: "Raison" }} />}
                 {showModal === "reset" && <InputNumber title="Reset des coins" onClose={() => setShowModal(null)} onValidate={({ input2 }) => { resetCoin(input2) }} input2={{ display: true, placeholder: "Raison" }} />}
             </div>
         </div>
