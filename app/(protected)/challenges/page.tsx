@@ -10,7 +10,7 @@ import { BsArrowRightCircle } from "react-icons/bs";
 import { staff_role } from "@/lib/config";
 import { useSession } from "@/hooks/userSession";
 import Link from "next/link";
-import { FaFire } from "react-icons/fa";
+import { FaFire, FaFlag } from "react-icons/fa";
 import { useApi } from "@/hooks/useApi";
 
 export default function Home() {
@@ -30,7 +30,7 @@ export default function Home() {
         category: category[]
         flag_format: string
         files: File[]
-    }>({title: "", description: "", difficulty: "", category: [], flag_format: "", files: []})
+    }>({ title: "", description: "", difficulty: "", category: [], flag_format: "", files: [] })
 
     const [settingsCtfBuilder, setSettingsCtfBuilder] = useState({ displayDifficulty: false, displayCategory: false, displayMaxAttempt: false, displayCreateFlags: false, displayInsertFile: false })
 
@@ -214,16 +214,23 @@ export default function Home() {
                                         <p><span className="text-white font-bold">Catégorie :</span> {ctfBuilder.category || "N/A"}</p>
                                         <p><span className="text-white font-bold">Format :</span>{ctfBuilder.flag_format || "N/A"}</p>
                                         <p><span className="text-white font-bold">Énoncé :</span></p>
-                                        <div>
-                                            <span className="text-white font-bold">Fichier :</span>
-                                            {selectedFiles.length > 0 && (
-                                                <div className="text-white/40 text-sm">
-                                                    {selectedFiles.map((f) => (
-                                                        <p key={f.name}>📄 {f.name}</p>
-                                                    ))}
-                                                </div>
-                                            ) || "Aucun"}
-                                        </div>
+                                        <span className="text-white font-bold">Fichier : {selectedFiles.length > 0 && (
+                                            <div className="text-white/40 text-sm">
+                                                {selectedFiles.map((f) => (
+                                                    <p key={f.name}>📄 {f.name}</p>
+                                                ))}
+                                            </div>) || "Aucun"}
+                                        </span>
+                                        <span className="text-white font-bold">Liste des flags :</span>
+                                        {ctfFlag.length === 0 ? (
+                                            <h2 className="bg-[#2a2a3d] w-full p-2 rounded-lg text-white/40">Aucun flag pour le moment !</h2>
+                                        ) : (
+                                            <div className="w-full flex flex-col items-center gap-2 bg-[#2a2a3d]/40 p-3 rounded-lg max-h-35 overflow-y-auto">
+                                                {ctfFlag.map((el) => (
+                                                    <p key={el.title} className="bg-[#2a2a3d] w-full p-2 rounded-lg text-white/40 flex items-center gap-2"><FaFlag className="text-black/40" />Titre : {el.title} | Flag : {el.flag}</p>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

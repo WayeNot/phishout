@@ -5,6 +5,7 @@ import { useApi } from '@/hooks/useApi'
 import { ctf, ctf_flags } from '@/lib/types'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { CiCircleCheck } from 'react-icons/ci'
 import { FaLightbulb } from 'react-icons/fa'
@@ -14,6 +15,7 @@ export default function Page() {
     const { showNotif } = useNotif()
     const params = useParams();
     const { call } = useApi()
+    const router = useRouter();
 
     const [ctf, setCtf] = useState<ctf>()
     const [ctfFlags, setCtfFlags] = useState<ctf_flags[]>([])
@@ -24,11 +26,23 @@ export default function Page() {
         if (!params?.id) return;
         const getCtf = async () => {
             const data = await call(`/api/challenges/${params.id}?type=ctf`)
+            if (!data.ctf) {
+                router.refresh()
+                router.push("/challenges")
+                showNotif("Ce CTF n'existe pas / plus !")
+                return
+            }
             setCtf(data.ctf)
             setCtfFlags(data.flags)
         }
         getCtf()
     }, [params.id])
+
+    const handleHint = async (id: number) => {
+        id = Number(id)
+        // const data = await call(`/api/users/${}`)
+        setDisplayHint(id)
+    }
 
     const handleValidate = async (id: number) => {
         const flagObj = ctfFlags.find(el => el.id === id);
@@ -82,7 +96,7 @@ export default function Page() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
                     {ctfFlags.map((v, k) => (
                         <div key={k} className="w-full h-full min-h-65 bg-linear-to-br from-[#1e1e2f] to-[#181825] border border-gray-700 rounded-2xl shadow-2xl p-6 flex flex-col justify-between">                            <h2 className="text-xl font-semibold text-white">{v.title}</h2>
-                            <p className="text-xs text-white/40 mb-4 mt-2">{`Format du flag : ${v.flag_format}{flag}`}</p>
+                            <p className="text-xs text-white/40 mb-4 mt-2">{v.description}</p>
                             <div className="flex items-center gap-2 mb-4">
                                 {v.found ? (
                                     <div className="flex-1 relative">
@@ -90,7 +104,7 @@ export default function Page() {
                                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30">🔎</span>
                                     </div>) : (
                                     <div className="flex-1 relative">
-                                        <input value={currentFlags[v.id] || ""} onChange={(e) => setCurrentFlags(prev => ({ ...prev, [v.id]: e.target.value }))} type="text" placeholder={`${ctf?.flag_format}{flag}`} className="w-full h-11 px-4 pr-10 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition" />
+                                        <input value={currentFlags[v.id] || ""} onChange={(e) => setCurrentFlags(prev => ({ ...prev, [v.id]: e.target.value }))} type="text" placeholder={`${ctf?.flag_format}{${v.flag_format}}`} className="w-full h-11 px-4 pr-10 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition" />
                                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30">🔎</span>
                                     </div>
                                 )}
@@ -105,7 +119,7 @@ export default function Page() {
                                 ) : (
                                     <div>
                                         {v.hint ? (
-                                            <button onClick={() => setDisplayHint(v.id)} className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-yellow-300 hover:border-yellow-400 transition duration-500 cursor-pointer"><FaLightbulb /></button>
+                                            <button onClick={() => handleHint(v.id)} className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-yellow-300 hover:border-yellow-400 transition duration-500 cursor-pointer"><FaLightbulb /></button>
                                         ) : (
                                             <button onClick={() => showNotif("Aucun indice pour ce flag !")} className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-red-500 hover:border-red-500 transition duration-500 cursor-pointer"><LuLightbulbOff /></button>
                                         )}
