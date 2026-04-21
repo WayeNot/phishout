@@ -5,6 +5,8 @@ import { useEffect, useState } from "react"
 import { MdAdminPanelSettings, MdCheckBoxOutlineBlank, MdExitToApp } from "react-icons/md"
 import { useRouter } from "next/navigation"
 
+import { useNavData } from "@/app/store"
+
 import AdminPanel from "./AdminPanel"
 import { default_pp, staff_role, statusColor, statusColorHover } from "@/lib/config"
 import { TbCoinRupeeFilled } from "react-icons/tb"
@@ -23,6 +25,17 @@ export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false)
     const [showAdminPanel, setShowAdminPanel] = useState(false)
     const [inMaintenance, setInMaintenance] = useState(false)
+
+    const { username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coin, updateCoin } = useNavData()
+
+    useEffect(() => {
+        updateUsername(userSession?.username)
+        updateEmail(userSession?.email)
+        updateRole(userSession?.role)
+        updatePp_url(userSession?.pp_url)
+        updateStatus(userSession?.status)
+        updateCoin(userSession?.coin)
+    }, [userSession])
 
     const handleLogout = async () => {
         await call("/api/auth/logout", { method: "POST" })
@@ -45,13 +58,13 @@ export default function Navbar() {
             {inMaintenance && (
                 <h2 className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center"><IoMdCheckboxOutline /> - Site actuellement en maintenance !</h2>
             )}
-            {!inMaintenance && userSession?.role && "guest".includes(userSession.role) && (
+            {!inMaintenance && role && "guest".includes(role) && (
                 <Link href="/accounts/login" className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500"><FaFire className="text-orange-500" /> Connectez-vous pour sauvegarder votre progression<FaFire className="text-orange-500" /></Link>
             )}
             <nav className="flex items-center justify-between p-4 sm:mx-5">
                 <div className="flex items-center gap-5 text-white/40">
                     <h1 className="text-xl h-fit sm:text-2xl text-white/60 font-mono">FlagCore</h1>
-                    {userSession?.role && staff_role.includes(userSession.role) && (
+                    {role && staff_role.includes(role) && (
                         <div className="flex items-center gap-3">
                             <MdAdminPanelSettings onClick={() => setShowAdminPanel(true)} className="text-red-500 font-bold text-[22px] hover:text-red-800 transition duration-500 cursor-pointer" />
                             <GiMusicSpell className="text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600" />
@@ -61,13 +74,13 @@ export default function Navbar() {
 
                 <div className="flex items-center">
                     <div className="flex items-center gap-5 font-bold italic text-white/40">
-                        <Link href={`/user/${userSession?.user_id}`} className="flex items-center gap-3 hover:text-white/70 transition duration-500"><img src={userSession?.pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-16 rounded-[25%] bg-center bg-cover bg-no-repeat ${statusColor[userSession?.status ?? "offline"]}`} />
+                        <Link href={`/user/${userSession?.user_id}`} className="flex items-center gap-3 hover:text-white/70 transition duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-16 rounded-[25%] bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} />
                             <span className="mx-2">-</span>
-                            {userSession?.username}
+                            {username}
                         </Link>
                     </div>
                     <p className="text-white/40 text-[20px] mx-5"> | </p>
-                    <p className="flex items-center gap-3 text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600"><TbCoinRupeeFilled />{userSession?.coin}</p>
+                    <p className="flex items-center gap-3 text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600"><TbCoinRupeeFilled />{coin}</p>
                 </div>
 
                 <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>

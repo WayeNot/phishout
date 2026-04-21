@@ -60,9 +60,11 @@ export type NewCtfFlag = {
     title: string
     description: string
     flag: string
-    format: string
+    flag_format: string
     hint: string
     hint_cost?: number
+    coin_reward?: number
+    points?: number
 }
 
 export type ctf = {
@@ -87,5 +89,6 @@ export interface ctf_flags {
     description: string;
     hint: string;
     hint_cost?: number
+    hint_show: boolean
     found: boolean
 }

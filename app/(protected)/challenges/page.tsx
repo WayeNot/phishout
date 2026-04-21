@@ -35,7 +35,7 @@ export default function Home() {
     const [settingsCtfBuilder, setSettingsCtfBuilder] = useState({ displayDifficulty: false, displayCategory: false, displayMaxAttempt: false, displayCreateFlags: false, displayInsertFile: false })
 
     const [ctfFlag, setCtfFlag] = useState<NewCtfFlag[]>([])
-    const [ctfNewFlag, setCtfNewFlag] = useState<NewCtfFlag>({ title: "", description: "", flag: "", format: "", hint: "", hint_cost: undefined })
+    const [ctfNewFlag, setCtfNewFlag] = useState<NewCtfFlag>({ title: "", description: "", flag: "", flag_format: "", hint: "", hint_cost: undefined, coin_reward: undefined, points: undefined })
 
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
@@ -82,10 +82,10 @@ export default function Home() {
         setAddCtf(false)
         setAddGeoint(false)
         setGeointBuilder({ title: "", description: "", difficulty: "", image: "", flag: "", hint: "", points: 0 })
-        setSettingsCtfBuilder({ ...settingsCtfBuilder, displayMaxAttempt: false });
+        setSettingsCtfBuilder({ displayDifficulty: false, displayCategory: false, displayMaxAttempt: false, displayCreateFlags: false, displayInsertFile: false });
         setCtfBuilder({ title: "", description: "", difficulty: "", category: [], flag_format: "", files: [] })
         setCtfFlag([])
-        setCtfNewFlag({ title: "", description: "", flag: "", format: "", hint: "", hint_cost: undefined })
+        setCtfNewFlag({ title: "", description: "", flag: "", flag_format: "", hint: "", hint_cost: undefined, coin_reward: undefined, points: undefined })
     }
 
     const handleCreate = async () => {
@@ -173,11 +173,11 @@ export default function Home() {
                                                     )}
                                                 </div>
                                                 <div className="w-1/2">
-                                                    <button onClick={toggleCategory} className={`${ctfBuilder.category ? "border-green-700/40" : "border-red-500/40"} flex items-center justify-center gap-2 border-2 rounded-lg w-full text-white/80 p-1.5 transition duration-500 cursor-pointer hover:text-white/60 hover:border-white/20 text-[13px]`}>{ctfBuilder.category ? `Catégorie : ( ${ctfBuilder.category} )` : "Catégorie"} {settingsCtfBuilder.displayCategory ? <IoIosArrowDropupCircle /> : <IoIosArrowDropdownCircle />}</button>
+                                                    <button onClick={toggleCategory} className={`${ctfBuilder.category.length > 0 ? "border-green-700/40" : "border-red-500/40"} flex items-center justify-center gap-2 border-2 rounded-lg w-full text-white/80 p-1.5 transition duration-500 cursor-pointer hover:text-white/60 hover:border-white/20 text-[13px]`}>{ctfBuilder.category ? `Catégorie : ( ${ctfBuilder.category} )` : "Catégorie"} {settingsCtfBuilder.displayCategory ? <IoIosArrowDropupCircle /> : <IoIosArrowDropdownCircle />}</button>
                                                     {settingsCtfBuilder.displayCategory && (
                                                         <div className="flex items-center justify-center gap-2 flex-wrap w-full mt-2">
                                                             {categoryBtn.map((el) => (
-                                                                <button key={el.name} onClick={() => { setCtfBuilder({ ...ctfBuilder, category: [...ctfBuilder.category, el.name as category] }); setSettingsCtfBuilder({ ...settingsCtfBuilder, displayCategory: false }) }} className="text-white/40 bg-[#2a2a3d] rounded-xl w-fit p-2 cursor-pointer hover:bg-[#2a2a3d]/60 transition duration-500"><span className={el.color}>{el.name}</span></button>
+                                                                <button key={el.name} onClick={() => setCtfBuilder({ ...ctfBuilder, category: [...ctfBuilder.category, el.name as category] })} className="text-white/40 bg-[#2a2a3d] rounded-xl w-fit p-2 cursor-pointer hover:bg-[#2a2a3d]/60 transition duration-500"><span className={el.color}>{el.name}</span></button>
                                                             ))}
                                                         </div>
                                                     )}
@@ -211,7 +211,16 @@ export default function Home() {
                                         <p><span className="text-white font-bold">Nom :</span> {ctfBuilder.title || "N/A"}</p>
                                         <p><span className="text-white font-bold">Description :</span> {ctfBuilder.description || "N/A"}</p>
                                         <p><span className="text-white font-bold">Difficulté :</span> {ctfBuilder.difficulty || "N/A"}</p>
-                                        <p><span className="text-white font-bold">Catégorie :</span> {ctfBuilder.category || "N/A"}</p>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-white font-bold">Catégorie :</span>
+                                            {ctfBuilder.category.length > 0 ? (
+                                                <div className="flex items-center gap-2">
+                                                    {ctfBuilder.category.map((v, k) => (
+                                                        <p key={k}>{v}</p>
+                                                    ))}
+                                                </div>
+                                            ) : "N/A"}
+                                        </div>
                                         <p><span className="text-white font-bold">Format :</span>{ctfBuilder.flag_format || "N/A"}</p>
                                         <p><span className="text-white font-bold">Énoncé :</span></p>
                                         <span className="text-white font-bold">Fichier : {selectedFiles.length > 0 && (
@@ -258,7 +267,7 @@ export default function Home() {
                     )}
                     {settingsCtfBuilder.displayCreateFlags && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-                            <div className="flex gap-5 w-full max-w-4xl max-h-87.5">
+                            <div className="flex gap-5 w-full max-w-4xl h-fit">
                                 <div className="flex flex-col items-center gap-3 w-1/2 bg-[#1e1e2f] border border-gray-700 rounded-2xl shadow-2xl p-6">
                                     <h2 className="text-xl font-bold text-white">Création des flags</h2>
                                     <hr className="text-white/40 my-3 w-1/2 m-auto" />
@@ -268,19 +277,23 @@ export default function Home() {
                                         <input value={ctfNewFlag.description} onChange={(e) => setCtfNewFlag({ ...ctfNewFlag, description: e.target.value })} type="text" placeholder="Description du flag" className="border-2 border-white/40 rounded-lg w-1/2 text-white/80 p-1.5" />
                                     </div>
                                     <div className="w-full flex items-center gap-2">
-                                        <input value={ctfNewFlag.format} onChange={(e) => setCtfNewFlag({ ...ctfNewFlag, format: e.target.value })} type="text" placeholder="Format du flag" className="border-2 border-white/40 rounded-lg w-1/2 text-white/80 p-1.5" />
                                         <input value={ctfNewFlag.flag} onChange={(e) => setCtfNewFlag({ ...ctfNewFlag, flag: e.target.value })} type="text" placeholder="Flag a trouver" className="border-2 border-white/40 rounded-lg w-1/2 text-white/80 p-1.5" />
+                                        <input value={ctfNewFlag.flag_format} onChange={(e) => setCtfNewFlag({ ...ctfNewFlag, flag_format: e.target.value })} type="text" placeholder="Format du flag" className="border-2 border-white/40 rounded-lg w-1/2 text-white/80 p-1.5" />
                                     </div>
                                     <div className="w-full flex items-center gap-2">
                                         <input value={ctfNewFlag.hint} onChange={(e) => setCtfNewFlag({ ...ctfNewFlag, hint: e.target.value })} type="text" placeholder="hint ( rien par défaut ! )" className="border-2 border-white/40 rounded-lg w-1/2 text-white/80 p-1.5" />
                                         <input value={ctfNewFlag.hint_cost} onChange={(e) => setCtfNewFlag({ ...ctfNewFlag, hint_cost: Number(e.target.value) })} type="number" placeholder="🪙 - Cout de l'hint" className="border-2 border-white/40 rounded-lg w-1/2 text-white/80 p-1.5" />
                                     </div>
+                                    <div className="w-full flex items-center gap-2">
+                                        <input value={ctfNewFlag.coin_reward} onChange={(e) => setCtfNewFlag({ ...ctfNewFlag, coin_reward: Number(e.target.value) })} type="number" placeholder="🪙 - Récompense" className="border-2 border-white/40 rounded-lg w-1/2 text-white/80 p-1.5" />
+                                        <input value={ctfNewFlag.points} onChange={(e) => setCtfNewFlag({ ...ctfNewFlag, points: Number(e.target.value) })} type="number" placeholder="🥇 - Give de point" className="border-2 border-white/40 rounded-lg w-1/2 text-white/80 p-1.5" />
+                                    </div>
                                     <div className="w-full flex items-center gap-2 my-5">
-                                        <button onClick={() => { setCtfNewFlag({ title: "", description: "", flag: "", format: "", hint: "", hint_cost: undefined }); setSettingsCtfBuilder({ ...settingsCtfBuilder, displayCreateFlags: false }) }} className="border-2 border-white/40 rounded-lg w-1/2 text-white/80 p-1.5 hover:bg-red-700 transition duration-500 cursor-pointer">Retour</button>
+                                        <button onClick={() => { setCtfNewFlag({ title: "", description: "", flag: "", flag_format: "", hint: "", hint_cost: undefined, coin_reward: undefined, points: undefined }); setSettingsCtfBuilder({ ...settingsCtfBuilder, displayCreateFlags: false }) }} className="border-2 border-white/40 rounded-lg w-1/2 text-white/80 p-1.5 hover:bg-red-700 transition duration-500 cursor-pointer">Retour</button>
                                         {(!ctfNewFlag.title || !ctfNewFlag.description || !ctfNewFlag.flag) ? (
                                             <button className="border-2 border-white/40 rounded-lg w-1/2 text-white/80 p-1.5 bg-red-800 hover:bg-red-600 transition duration-500 cursor-not-allowed">Ajouter</button>
                                         ) : (
-                                            <button onClick={() => { setCtfFlag(prev => [...prev, ctfNewFlag]); setCtfNewFlag({ title: "", description: "", flag: "", format: "", hint: "", hint_cost: undefined }) }} className="border-2 border-white/40 rounded-lg w-1/2 text-white/80 p-1.5 bg-green-800 hover:bg-green-600 transition duration-500 cursor-pointer">Ajouter</button>
+                                            <button onClick={() => { setCtfFlag(prev => [...prev, ctfNewFlag]); setCtfNewFlag({ title: "", description: "", flag: "", flag_format: "", hint: "", hint_cost: undefined, coin_reward: undefined, points: undefined }) }} className="border-2 border-white/40 rounded-lg w-1/2 text-white/80 p-1.5 bg-green-800 hover:bg-green-600 transition duration-500 cursor-pointer">Ajouter</button>
                                         )}
                                     </div>
                                 </div>

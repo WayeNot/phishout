@@ -73,10 +73,9 @@ export async function POST(req: Request) {
             const difficulty = form.get("difficulty") as string;
             const category = JSON.parse(form.get("category") as string);
             const flag_format = form.get("flag_format") as string;
-
             const files = form.getAll("files") as File[];
-
             const flags = JSON.parse(form.get("flags") as string);
+            const coin_reward = JSON.parse(form.get("reward") as string);
 
             if (!title || !description || !difficulty || !category || !flag_format) {
                 return NextResponse.json({ success: false, error: "Missing fields" }, { status: 400 });
@@ -98,7 +97,7 @@ export async function POST(req: Request) {
                 RETURNING id
             `;
 
-            for (const flag of flags) await sql`INSERT INTO flags (ctf_id, title, flag, flag_format, description, hint, hint_cost) VALUES (${result[0].id}, ${flag.title}, ${flag.flag}, ${flag.flag_format || "x"}, ${flag.description}, ${flag.hint}, ${flag.hint_cost} )`
+            for (const flag of flags) await sql`INSERT INTO flags (challenge_id, challenge_type, title, flag, flag_format, description, hint, hint_cost, coin_reward) VALUES (${result[0].id}, ${type}, ${flag.title}, ${flag.flag}, ${flag.flag_format || "x"}, ${flag.description}, ${flag.hint}, ${flag.hint_cost || 0}, ${Number(coin_reward) || 0} )`
 
             return NextResponse.json({
                 success: true,

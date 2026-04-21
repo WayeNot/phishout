@@ -1,5 +1,6 @@
 "use client"
 
+import { useNavData } from '@/app/store'
 import { useNotif } from '@/components/NotifProvider'
 import { useApi } from '@/hooks/useApi'
 import { ctf, ctf_flags } from '@/lib/types'
@@ -13,15 +14,16 @@ import { LuLightbulbOff } from 'react-icons/lu'
 
 export default function Page() {
     const { showNotif } = useNotif()
-    const params = useParams();
     const { call } = useApi()
+    const params = useParams();
     const router = useRouter();
 
     const [ctf, setCtf] = useState<ctf>()
     const [ctfFlags, setCtfFlags] = useState<ctf_flags[]>([])
-    const [displayHint, setDisplayHint] = useState(0)
     const [currentFlags, setCurrentFlags] = useState<Record<number, string>>({})
-    
+
+    const { updateCoin } = useNavData()
+
     useEffect(() => {
         if (!params?.id) return;
         const getCtf = async () => {
@@ -40,8 +42,11 @@ export default function Page() {
 
     const handleHint = async (id: number) => {
         id = Number(id)
-        // const data = await call(`/api/users/${}`)
-        setDisplayHint(id)
+        console.log(ctf, ctfFlags);
+        const data = await call(`/api/hint/?type=ctf`, { method: "POST", body: JSON.stringify({ challenge_id: params.id, flag_id: id }) })
+        setCtfFlags(prev => prev.map((el) => el.id === id ? { ...el, hintShow: true } : el))
+        updateCoin(await data.coins)
+        showNotif("Vous venez de déverouiller cet indice !")
     }
 
     const handleValidate = async (id: number) => {
@@ -50,8 +55,13 @@ export default function Page() {
 
         const input = currentFlags[id] || "";
 
+        if (!input || input === "") {
+            showNotif("Veuillez saisir un flag !")
+            return
+        }
+
         if (input === `${ctf?.flag_format}{${flagObj.flag}}`) {
-            await call(`/api/flags/?type=ctf`, { method: "POST", body: JSON.stringify({ ctf_id: params.id, flag_id: id }) }, "GG !");
+            await call(`/api/flags/?type=ctf`, { method: "POST", body: JSON.stringify({ challenge_id: params.id, flag_id: id }) }, "GG ! Vous venez de résoudre ce flag ");
 
             setCtfFlags(prev =>
                 prev.map(f =>
@@ -111,7 +121,13 @@ export default function Page() {
                                 {v.found ? (
                                     <div>
                                         {v.hint ? (
-                                            <button disabled className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-yellow-300 hover:text-yellow-600 hover:border-yellow-600 transition duration-500 cursor-pointer"><FaLightbulb /></button>
+                                            <div>
+                                                {v.hint_show ? (
+                                                    <button disabled className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-green-600 hover:border-green-600 transition duration-500 cursor-pointer"><FaLightbulb /></button>
+                                                ) : (
+                                                    <button disabled className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-yellow-300 hover:border-yellow-400 transition duration-500 cursor-pointer"><FaLightbulb /></button>
+                                                )}
+                                            </div>
                                         ) : (
                                             <button onClick={() => showNotif("Aucun indice pour ce flag !")} className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-red-500 hover:border-red-500 transition duration-500 cursor-pointer"><LuLightbulbOff /></button>
                                         )}
@@ -119,7 +135,13 @@ export default function Page() {
                                 ) : (
                                     <div>
                                         {v.hint ? (
-                                            <button onClick={() => handleHint(v.id)} className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-yellow-300 hover:border-yellow-400 transition duration-500 cursor-pointer"><FaLightbulb /></button>
+                                            <div>
+                                                {v.hint_show ? (
+                                                    <button disabled className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-green-600 hover:border-green-600 transition duration-500 cursor-pointer"><FaLightbulb /></button>
+                                                ) : (
+                                                    <button onClick={() => handleHint(v.id)} className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-yellow-300 hover:border-yellow-400 transition duration-500 cursor-pointer"><FaLightbulb /></button>
+                                                )}
+                                            </div>
                                         ) : (
                                             <button onClick={() => showNotif("Aucun indice pour ce flag !")} className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-red-500 hover:border-red-500 transition duration-500 cursor-pointer"><LuLightbulbOff /></button>
                                         )}
@@ -128,12 +150,12 @@ export default function Page() {
                             </div>
                             <div className="flex gap-2">
                                 {v.found ? (
-                                    <button disabled className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-medium transition duration-500 active:scale-95 cursor-not-allowed">Valider</button>
+                                    <button onClick={() => showNotif("Vous avez déjà résolu ce flag !", "success")} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-medium transition duration-500 active:scale-95 cursor-pointer">Valider</button>
                                 ) : (
-                                    <button onClick={(id) => handleValidate(v.id)} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-medium transition duration-500 cursor-pointer active:scale-95">Valider</button>
+                                    <button onClick={() => handleValidate(v.id)} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-medium transition duration-500 cursor-pointer active:scale-95">Valider</button>
                                 )}
                             </div>
-                            {displayHint === v.id && (
+                            {v.hint_show && (
                                 <p className="w-full mt-4 px-4 py-2 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"><span className="text-yellow-300">Indice</span> : {v.hint}</p>
                             )}
                         </div>
