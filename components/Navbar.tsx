@@ -2,13 +2,13 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { MdAdminPanelSettings, MdCheckBoxOutlineBlank, MdExitToApp } from "react-icons/md"
+import { MdAdminPanelSettings, MdExitToApp } from "react-icons/md"
 import { useRouter } from "next/navigation"
 
 import { useNavData } from "@/app/store"
 
 import AdminPanel from "./AdminPanel"
-import { default_pp, staff_role, statusColor, statusColorHover } from "@/lib/config"
+import { default_pp, maitenance_role, staff_role, statusColor, } from "@/lib/config"
 import { TbCoinRupeeFilled } from "react-icons/tb"
 import { GiMusicSpell } from "react-icons/gi"
 import { useApi } from "@/hooks/useApi"
@@ -29,13 +29,15 @@ export default function Navbar() {
     const { username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coin, updateCoin } = useNavData()
 
     useEffect(() => {
-        updateUsername(userSession?.username)
-        updateEmail(userSession?.email)
-        updateRole(userSession?.role)
-        updatePp_url(userSession?.pp_url)
-        updateStatus(userSession?.status)
-        updateCoin(userSession?.coin)
-    }, [userSession])
+        if (!userSession) return;
+
+        updateUsername(userSession.username ?? "");
+        updateEmail(userSession.email ?? "");
+        updateRole(userSession?.role ? [userSession.role] : []);
+        updatePp_url(userSession.pp_url ?? "");
+        updateStatus(userSession.status ?? "offline");
+        updateCoin(userSession.coin ?? 0);
+    }, [userSession]);
 
     const handleLogout = async () => {
         await call("/api/auth/logout", { method: "POST" })
@@ -45,26 +47,28 @@ export default function Navbar() {
 
     useEffect(() => {
         const getMaintenance = async () => {
-            const data = await call("/api/admin/maintenance")
-            setInMaintenance(data)
-        }
-        setInterval(() => {
-            getMaintenance()
-        }, 60000);
-    }, [])
+            const data = await call("/api/admin/maintenance");
+            setInMaintenance(data);
+        };
+
+        getMaintenance();
+        const interval = setInterval(getMaintenance, 60000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <div>
-            {inMaintenance && (
+            {inMaintenance && role && !role.some(r => maitenance_role.includes(r)) && (
                 <h2 className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center"><IoMdCheckboxOutline /> - Site actuellement en maintenance !</h2>
             )}
-            {!inMaintenance && role && "guest".includes(role) && (
+            {!inMaintenance && role && role.some(r => "guest".includes(r)) && (
                 <Link href="/accounts/login" className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500"><FaFire className="text-orange-500" /> Connectez-vous pour sauvegarder votre progression<FaFire className="text-orange-500" /></Link>
             )}
             <nav className="flex items-center justify-between p-4 sm:mx-5">
                 <div className="flex items-center gap-5 text-white/40">
                     <h1 className="text-xl h-fit sm:text-2xl text-white/60 font-mono">FlagCore</h1>
-                    {role && staff_role.includes(role) && (
+                    {role.some(r => staff_role.includes(r)) && (
                         <div className="flex items-center gap-3">
                             <MdAdminPanelSettings onClick={() => setShowAdminPanel(true)} className="text-red-500 font-bold text-[22px] hover:text-red-800 transition duration-500 cursor-pointer" />
                             <GiMusicSpell className="text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600" />

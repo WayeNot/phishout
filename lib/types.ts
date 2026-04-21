@@ -37,14 +37,6 @@ export type User = {
     is_online: boolean
 }
 
-export type flag_geoint = {
-    title: string
-    flag: string
-    format: string
-    description: string
-    indice: string
-}
-
 export type geoint = {
     id: number
     title: string
@@ -53,18 +45,16 @@ export type geoint = {
     difficulty: difficulty
     flag: string
     hint: string
+    cost_hint: number
     points: number
 }
 
-export type NewCtfFlag = {
+export type flag_geoint = {
     title: string
-    description: string
     flag: string
-    flag_format: string
-    hint: string
-    hint_cost?: number
-    coin_reward?: number
-    points?: number
+    format: string
+    description: string
+    indice: string
 }
 
 export type ctf = {
@@ -91,4 +81,51 @@ export interface ctf_flags {
     hint_cost?: number
     hint_show: boolean
     found: boolean
+}
+
+// Geoint Builder ↓
+
+export type GeointBuilderState = {
+    title: string;
+    description: string;
+    difficulty: difficulty | "";
+    image: string;
+    flag: string;
+    hint: string;
+    hint_cost?: number;
+    coin_reward?: number
+    points?: number;
+};
+
+// export type NewGeointFlag = {
+//     title: string
+//     description: string
+//     flag: string
+//     flag_format: string
+//     hint: string
+//     hint_cost?: number
+//     coin_reward?: number
+//     points?: number
+// }
+
+// CTF Builder ↓
+
+export type CtfBuilderState = {
+    title: string;
+    description: string;
+    difficulty: difficulty | "";
+    category: category[];
+    flag_format: string;
+    files: File[];
+};
+
+export type NewCtfFlag = {
+    title: string
+    description: string
+    flag: string
+    flag_format: string
+    hint: string
+    hint_cost?: number
+    coin_reward?: number
+    points?: number
 }
