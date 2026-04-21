@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { MdAdminPanelSettings, MdExitToApp } from "react-icons/md"
 import { useRouter } from "next/navigation"
 
-import { useNavData } from "@/app/store"
+import { useNavData } from "@/stores/store"
 
 import AdminPanel from "./AdminPanel"
 import { default_pp, maitenance_role, staff_role, statusColor, } from "@/lib/config"

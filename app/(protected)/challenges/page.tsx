@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { useSession } from "@/hooks/userSession";
 import { useApi } from "@/hooks/useApi";
 
 import { ctf, geoint } from "@/lib/types";
@@ -13,10 +12,8 @@ import GeointBuilder from "@/components/challenges/geoint/GeointBuilder";
 
 import HomeTabs from "@/components/challenges/home/HomeTabs";
 import CreateButtons from "@/components/challenges/home/CreateButtons";
-import GeointGroups from "@/components/challenges/home/GeointGroups";
-import ChallengeCard from "@/components/challenges/home/ChallengeCard";
-import Link from "next/link";
-import { useNavData } from "@/app/store";
+import { useNavData } from "@/stores/store"
+import ChallengeGroups from "@/components/challenges/home/ChallengeGroups";
 
 export default function Home() {
     const { call } = useApi();
@@ -38,6 +35,16 @@ export default function Home() {
 
     const open = (type: string, id: number) => router.push(`/challenges/${type}/${id}`);
 
+    const groupedCtf = useMemo(() => {
+        const f = (l: string) => ctf.filter(e => e.difficulty === l);
+        return {
+            Facile: f("Facile"),
+            Intermédiaire: f("Intermédiaire"),
+            Avancé: f("Avancé"),
+            Expert: f("Expert"),
+        };
+    }, [ctf]);
+
     const groupedGeoint = useMemo(() => {
         const f = (l: string) => geoint.filter(e => e.difficulty === l);
         return {
@@ -54,30 +61,19 @@ export default function Home() {
             <HomeTabs tab={tab} setTab={setTab} />
 
             {tab === 0 && (
-                <div className="px-6 space-y-6">
-                    <CreateButtons
-                        type="ctf"
-                        role={role[0]}
-                    />
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        {ctf.map(c => (
-                            <ChallengeCard key={c.id} title={c.title} onClick={() => open("ctf", c.id)} />
-                        ))}
-                    </div>
+                <div className="px-6 space-y-10">
+                    <CreateButtons type="ctf" role={role[0]} onGeoOpen={() => setOpenGeo(false)}/>
+                    <ChallengeGroups data={groupedCtf} open={open} type="ctf"/>
                 </div>
             )}
 
             {tab === 1 && (
                 <div className="px-6 space-y-10">
-                    <CreateButtons
-                        type="geoint"
-                        role={role[0]}
-                        onGeoOpen={() => setOpenGeo(true)}
-                    />
+                    <CreateButtons type="geoint" role={role[0]} onGeoOpen={() => setOpenGeo(true)}/>
                     {isGuest ? (
                         <div className="relative">
                             <div className="blur-xs scale-[1.01] pointer-events-none select-none opacity-80">
-                                <GeointGroups data={groupedGeoint} open={open} />
+                                <ChallengeGroups data={groupedGeoint} open={open} type="geoint"/>
                             </div>
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="bg-[#1e1e2f]/90 border border-white/10 rounded-2xl p-8 text-center shadow-2xl backdrop-blur-md max-w-md w-full">
@@ -90,7 +86,7 @@ export default function Home() {
                             </div>
                         </div>
                     ) : (
-                        <GeointGroups data={groupedGeoint} open={open} />
+                        <ChallengeGroups data={groupedGeoint} open={open} type="geoint"/>
                     )}
                 </div>
             )}

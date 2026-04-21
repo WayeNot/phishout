@@ -11,7 +11,7 @@ import { NotifProvider } from "@/components/NotifProvider"
 import { User } from "@/lib/types"
 import { default_pp } from "@/lib/config"
 import { useRouter } from 'next/navigation'
-import { useNavData } from "./store"
+import { useNavData } from "@/stores/store"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()

@@ -11,7 +11,7 @@ import Link from "next/link"
 import { TbCoinRupeeFilled } from "react-icons/tb"
 import { LuCalendar1 } from "react-icons/lu"
 import { useApi } from "@/hooks/useApi"
-import { useNavData } from "@/app/store"
+import { useNavData } from "@/stores/store"
 
 export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const { showNotif } = useNotif()

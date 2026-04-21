@@ -1,24 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { FaImage } from "react-icons/fa";
 import { BsLightningChargeFill } from "react-icons/bs";
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineDescription } from "react-icons/md";
 import DropDown from "@/components/ui/DropDown";
 import { difficultyBtn, difficulty, GeointBuilderState } from "@/lib/types";
 import { TbCoinRupeeFilled } from "react-icons/tb";
+import { useState } from "react";
 
 export default function GeointBuilder({ onClose, onCreate }: any) {
     const [builder, setBuilder] = useState<GeointBuilderState>({ title: "", description: "", difficulty: "", image: "", flag: "", hint: "", hint_cost: undefined, coin_reward: undefined, points: undefined });
     const [difficultyOpen, setDifficultyOpen] = useState(false);
     const canCreate = builder.title && builder.description && builder.difficulty && builder.flag && builder.image;
-
     const handleChange = (key: keyof GeointBuilderState, value: any) => setBuilder(prev => ({ ...prev, [key]: value }));
 
     return (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center">
-            <div className="w-full max-w-6xl flex gap-4">
+            <div className="w-full max-w-7xl flex gap-4">
                 <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl shadow-2xl text-white flex flex-col">
                     <div className="flex items-center justify-between p-4 border-b border-white/10">
                         <h2 className="font-bold text-sm flex items-center gap-2"><BsLightningChargeFill className="text-orange-400" /> GEOINT BUILDER</h2>
@@ -78,13 +76,8 @@ export default function GeointBuilder({ onClose, onCreate }: any) {
                 </div>
                 <div className="w-1/2 bg-[#12121c] border border-white/10 rounded-2xl p-6 text-white space-y-5 shadow-[0_0_30px_rgba(0,0,0,0.4)]">
                     <div className="flex items-center justify-between">
-                        <h2 className="font-bold flex items-center gap-2 text-white/90">
-                            <MdOutlineDescription className="text-orange-400 text-lg" />
-                            Aperçu
-                        </h2>
-                        <span className="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/40">
-                            🔴 - live preview
-                        </span>
+                        <h2 className="font-bold flex items-center gap-2 text-white/90"><MdOutlineDescription className="text-orange-400 text-lg" />Aperçu</h2>
+                        <span className="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/40">🔴 - live preview</span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 text-sm">
@@ -124,19 +117,14 @@ export default function GeointBuilder({ onClose, onCreate }: any) {
                     <div className="bg-white/5 border border-white/10 rounded-xl p-3 space-y-2">
                         <p className="text-white/40 text-xs">Description</p>
                         <div className="max-h-20 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-                            <p className="text-white/60 text-sm leading-relaxed break-words">
-                                {builder.description || "Aucune description"}
-                            </p>
+                            <p className="text-white/60 text-sm leading-relaxed wrap-break-word">{builder.description || "Aucune description"}</p>
                         </div>
                     </div>
 
                     {builder.image && (
                         <div className="relative">
-                            <img
-                                src={builder.image}
-                                className="w-full h-52 object-cover rounded-xl border border-white/10 shadow-lg"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent rounded-xl" />
+                            <img src={builder.image} className="w-full h-52 object-cover rounded-xl border border-white/10 shadow-lg"/>
+                            <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent rounded-xl" />
                         </div>
                     )}
                 </div>

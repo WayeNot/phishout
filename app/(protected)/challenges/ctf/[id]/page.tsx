@@ -1,6 +1,6 @@
 "use client"
 
-import { useNavData } from '@/app/store'
+import { useNavData } from '@/stores/store'
 import { useNotif } from '@/components/NotifProvider'
 import { useApi } from '@/hooks/useApi'
 import { ctf, ctf_flags } from '@/lib/types'
@@ -43,9 +43,9 @@ export default function Page() {
     const handleHint = async (id: number) => {
         id = Number(id)
         const data = await call(`/api/hint/?type=ctf`, { method: "POST", body: JSON.stringify({ challenge_id: params.id, flag_id: id }) })
-        setCtfFlags(prev => prev.map((el) => el.id === id ? { ...el, hintShow: true } : el))
+        setCtfFlags(prev => prev.map((el) => el.id === id ? { ...el, hint_show: true } : el))
         updateCoin(await data.coins)
-        showNotif("Vous venez de déverouiller cet indice !")
+        showNotif("Vous venez de déverouiller cet indice !", "success")
     }
 
     const handleValidate = async (id: number) => {
@@ -109,7 +109,7 @@ export default function Page() {
                             <div className="flex items-center gap-2 mb-4">
                                 {v.found ? (
                                     <div className="flex-1 relative">
-                                        <input value={""} disabled type="text" placeholder="Vous avez déjà trouvé ce flag !" className="placeholder:text-red-500/40 w-full h-11 px-4 pr-10 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition" />
+                                        <input value={""} disabled type="text" placeholder="Vous avez déjà trouvé ce flag !" className="placeholder:text-green-500/60 w-full h-11 px-4 pr-10 rounded-lg bg-[#2a2a3d] border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition" />
                                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30">🔎</span>
                                     </div>) : (
                                     <div className="flex-1 relative">
@@ -117,21 +117,7 @@ export default function Page() {
                                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30">🔎</span>
                                     </div>
                                 )}
-                                {v.found ? (
-                                    <div>
-                                        {v.hint ? (
-                                            <div>
-                                                {v.hint_show ? (
-                                                    <button disabled className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-green-600 hover:border-green-600 transition duration-500 cursor-pointer"><FaLightbulb /></button>
-                                                ) : (
-                                                    <button disabled className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-yellow-300 hover:border-yellow-400 transition duration-500 cursor-pointer"><FaLightbulb /></button>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            <button onClick={() => showNotif("Aucun indice pour ce flag !")} className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-red-500 hover:border-red-500 transition duration-500 cursor-pointer"><LuLightbulbOff /></button>
-                                        )}
-                                    </div>
-                                ) : (
+                                {v.found ? <button onClick={() => showNotif("Vous avez déjà réussi ce flag !", "success")} className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-green-600 hover:border-green-600 transition duration-500 cursor-pointer"><FaLightbulb /></button> : (
                                     <div>
                                         {v.hint ? (
                                             <div>

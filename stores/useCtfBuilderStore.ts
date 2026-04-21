@@ -7,6 +7,8 @@ type CtfBuilderState = {
     difficulty: difficulty | "";
     category: category[];
     flag_format: string;
+    points: number;
+    coins: number;
 };
 
 type Store = {
@@ -34,6 +36,8 @@ export const useCtfBuilderStore = create<Store>((set) => ({
         difficulty: "",
         category: [],
         flag_format: "",
+        coins: 0,
+        points: 0,
     },
 
     setBuilder: (v) =>
@@ -49,6 +53,8 @@ export const useCtfBuilderStore = create<Store>((set) => ({
                 difficulty: "",
                 category: [],
                 flag_format: "",
+                coins: 0,
+                points: 0,
             },
             flags: [],
             selectedFiles: [],
