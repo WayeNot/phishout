@@ -52,12 +52,12 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     }, [panelTab])
 
     const setMaintenance = async () => {
-        await call("/api/admin/maintenance", { method: "PATCH", body: JSON.stringify({ inMaintenance: !inMaintenance }) }, inMaintenance ? "Maintenance terminée avec succès !" : "Maintenance activée avec succès !")
+        await call("/api/admin/maintenance", { method: "PATCH", body: JSON.stringify({ inMaintenance: !inMaintenance }) }, [inMaintenance ? "Maintenance terminée avec succès !" : "Maintenance activée avec succès !"])
         setInMaintenance(!inMaintenance)
     }
 
     const updateCoins = async (value: number, reason: string) => {
-        const data = await call(`/api/users/${editUser}/coin/`, { method: "PATCH", body: JSON.stringify({ operation: `${value < 0 ? "remove_coin" : "add_coin"}`, value: Math.abs(value), reason: reason || "" }) }, "Nombre de coin bien mis à jour !")
+        const data = await call(`/api/users/${editUser}/coin/`, { method: "PATCH", body: JSON.stringify({ operation: `${value < 0 ? "remove_coin" : "add_coin"}`, value: Math.abs(value), reason: reason || "" }) }, ["Nombre de coin bien mis à jour !"])
         setUsers(prev => prev.map(user => user.user_id === editUser ? { ...user, coin: data.newSold } : user))
         setShowModal(null)
         updateCoin(data.newSold)
@@ -78,13 +78,13 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
             return
         }
         setShowModal(null)
-        const data = await call(`/api/users/${editUser}/coin`, { method: "PATCH", body: JSON.stringify({ operation: "set_coin", value: Math.abs(num), reason: reason || "" }) }, "Nombre de coin set avec succès !")
+        const data = await call(`/api/users/${editUser}/coin`, { method: "PATCH", body: JSON.stringify({ operation: "set_coin", value: Math.abs(num), reason: reason || "" }) }, ["Nombre de coin set avec succès !"])
         setUsers(prev => prev.map(user => user.user_id === editUser ? { ...user, coin: data.newSold } : user))
         updateCoin(data.newSold)
     }
 
     const resetCoin = async (reason: string = "") => {
-        await call(`/api/users/${editUser}/coin`, { method: "PATCH", body: JSON.stringify({ operation: "reset_coin", value: 0, reason: reason || "" }) }, "Nombre de coin reset avec succès !")
+        await call(`/api/users/${editUser}/coin`, { method: "PATCH", body: JSON.stringify({ operation: "reset_coin", value: 0, reason: reason || "" }) }, ["Nombre de coin reset avec succès !"])
         setUsers(prev => prev.map(user => user.user_id === editUser ? { ...user, coin: 0 } : user))
         setShowModal(null)
         updateCoin(0)
