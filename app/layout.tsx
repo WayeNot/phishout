@@ -12,6 +12,7 @@ import { User } from "@/lib/types"
 import { default_pp } from "@/lib/config"
 import { useRouter } from 'next/navigation'
 import { useNavData } from "@/stores/store"
+import { useApi } from "@/hooks/useApi"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
@@ -19,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const [user, setUser] = useState<User | null>(null)
     const [guest, setGuest] = useState(false)
 
-    const { isGuest, updateIsGuest, username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coin, updateCoin } = useNavData()
+    const { isGuest, updateIsGuest, user_id, updateUserId, username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coin, updateCoin } = useNavData()
 
     useEffect(() => {
         const getSession = async () => {
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     return
                 }
                 const data = await res.json()
+                updateUserId(data.user_id)
                 if (data.isGuest) {
                     setGuest(true)
                     setUser({ username: "Invité", status: "online", user_id: Date.now(), role: "guest", pp_url: default_pp, password: "", is_online: true, email: "guest@invite.com", coin: 9999, created_at: "" })
@@ -66,7 +68,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         </div>
                     )}
 
-
                     <main className="flex-1 relative">
                         {children}
                     </main>
@@ -74,7 +75,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     {!pathname.startsWith("/accounts") && (
                         <Footer />
                     )}
-
                 </NotifProvider>
             </body>
         </html>

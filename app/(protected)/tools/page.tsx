@@ -1,11 +1,11 @@
 "use client";
 
-import { useSession } from "@/hooks/userSession";
 import { FaFire } from "react-icons/fa"
 import Link from "next/link"
+import { useNavData } from "@/stores/store";
 
 export default function Home() {
-    const { userSession } = useSession()
+    const { isGuest, updateIsGuest, user_id, updateUserId, username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coin, updateCoin } = useNavData()
 
     const tools = [
         { name: "Tools" },
@@ -15,7 +15,7 @@ export default function Home() {
     ]
     return (
         <div>
-            {userSession?.role && "guest".includes(userSession.role) ? (
+            {role && role.some(r => "guest".includes(r)) ? (
                 <div>
                     {tools.map((v, k) => (
                         <div key={k} className="blur-[6px] pointer-events-none select-none">

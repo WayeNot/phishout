@@ -2,7 +2,6 @@
 
 import { useNotif } from '@/components/NotifProvider'
 import { useApi } from '@/hooks/useApi'
-import { useSession } from '@/hooks/userSession'
 import { geoint } from '@/lib/types'
 import { useParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
@@ -13,7 +12,6 @@ import { IoWarningSharp } from 'react-icons/io5'
 
 export default function Page() {
     const { showNotif } = useNotif()
-    const { userSession } = useSession()
     const params = useParams();
     const router = useRouter();
 

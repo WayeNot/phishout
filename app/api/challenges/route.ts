@@ -15,12 +15,12 @@ export async function GET(req: Request) {
         const challengeType = searchParams.get("type");
 
         if (challengeType === "ctf") {
-            const result = await sql`SELECT * FROM ctf`;
+            const result = await sql`SELECT id, title, difficulty FROM ctf`;
             return NextResponse.json(result)
         }
 
         if (challengeType === "geoint") {
-            const result = await sql`SELECT * FROM geoint`;
+            const result = await sql`SELECT id, title, difficulty FROM geoint`;
             return NextResponse.json(result)
         }
 

@@ -78,9 +78,10 @@ export interface ctf_flags {
     flag_format: string;
     description: string;
     hint: string;
-    hint_cost?: number
-    hint_show: boolean
-    found: boolean
+    hint_cost?: number;
+    hint_show: boolean;
+    found: boolean;
+    coin_reward: number;
 }
 
 // Geoint Builder ↓

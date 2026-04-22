@@ -13,45 +13,26 @@ import { TbCoinRupeeFilled } from "react-icons/tb"
 import { GiMusicSpell } from "react-icons/gi"
 import { useApi } from "@/hooks/useApi"
 import { IoMdCheckboxOutline } from "react-icons/io"
-import { useSession } from "@/hooks/userSession"
 import { FaFire } from "react-icons/fa"
 
 export default function Navbar() {
     const { call } = useApi()
-    const { userSession } = useSession()
+    const { isGuest, updateIsGuest, user_id, updateUserId, username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coin, updateCoin } = useNavData()
 
     const router = useRouter()
 
     const [menuOpen, setMenuOpen] = useState(false)
     const [showAdminPanel, setShowAdminPanel] = useState(false)
-    const [inMaintenance, setInMaintenance] = useState(false)
-
-    const { username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coin, updateCoin } = useNavData()
-
+    
     const handleLogout = async () => {
         await call("/api/auth/logout", { method: "POST" })
         router.refresh()
         router.push("/")
     }
 
-    useEffect(() => {
-        const getMaintenance = async () => {
-            const data = await call("/api/admin/maintenance");
-            setInMaintenance(data);
-        };
-
-        getMaintenance();
-        const interval = setInterval(getMaintenance, 60000);
-
-        return () => clearInterval(interval);
-    }, []);
-
     return (
         <div>
-            {inMaintenance && role && !role.some(r => maitenance_role.includes(r)) && (
-                <h2 className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center"><IoMdCheckboxOutline /> - Site actuellement en maintenance !</h2>
-            )}
-            {!inMaintenance && role && role.some(r => "guest".includes(r)) && (
+            {role && role.some(r => "guest".includes(r)) && (
                 <Link href="/accounts/login" className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500"><FaFire className="text-orange-500" /> Connectez-vous pour sauvegarder votre progression<FaFire className="text-orange-500" /></Link>
             )}
             <nav className="flex items-center justify-between p-4 sm:mx-5">
@@ -64,10 +45,9 @@ export default function Navbar() {
                         </div>
                     )}
                 </div>
-
                 <div className="flex items-center">
                     <div className="flex items-center gap-5 font-bold italic text-white/40">
-                        <Link href={`/user/${userSession?.user_id}`} className="flex items-center gap-3 hover:text-white/70 transition duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-16 rounded-[25%] bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} />
+                        <Link href={`/user/${user_id}`} className="flex items-center gap-3 hover:text-white/70 transition duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-16 rounded-[25%] bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} />
                             <span className="mx-2">-</span>
                             {username}
                         </Link>

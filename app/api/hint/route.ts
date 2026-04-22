@@ -25,7 +25,7 @@ export async function POST(req: Request) {
         if (has_buy_hint.length > 0) return NextResponse.json({ success: false, error: "Vous avez déjà dévérouiller cet indice !" }, { status: 406 })
         const currentCoin = await sql`UPDATE users SET coin = coin - ${hint_cost[0].hint_cost} WHERE user_id = ${user_id} RETURNING coin`;
         await sql`INSERT INTO hint_show (user_id, challenge_id, flag_id, type) VALUES (${user_id}, ${challenge_id}, ${flag_id}, ${type})`
-        return NextResponse.json({ success: true, coins: currentCoin[0].coin })
+        return NextResponse.json({ success: true, currentCoin: currentCoin[0].coin })
     } catch (err) {
         console.error(err);
         return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });

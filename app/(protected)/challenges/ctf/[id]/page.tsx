@@ -1,6 +1,5 @@
 "use client"
 
-import { useNavData } from '@/stores/store'
 import { useNotif } from '@/components/NotifProvider'
 import { useApi } from '@/hooks/useApi'
 import { ctf, ctf_flags } from '@/lib/types'
@@ -11,9 +10,12 @@ import { useEffect, useState } from 'react'
 import { CiCircleCheck } from 'react-icons/ci'
 import { FaLightbulb } from 'react-icons/fa'
 import { LuLightbulbOff } from 'react-icons/lu'
+import ModalBool from '@/components/ui/ModalBool'
+import { useNavData } from '@/stores/store'
 
 export default function Page() {
     const { showNotif } = useNotif()
+    const { updateCoin } = useNavData()
     const { call } = useApi()
     const params = useParams();
     const router = useRouter();
@@ -22,7 +24,8 @@ export default function Page() {
     const [ctfFlags, setCtfFlags] = useState<ctf_flags[]>([])
     const [currentFlags, setCurrentFlags] = useState<Record<number, string>>({})
 
-    const { updateCoin } = useNavData()
+    const [showModalBool, setShowModalBool] = useState(false)
+    const [selectedFlag, setSelectedFlag] = useState<ctf_flags | null>(null);
 
     useEffect(() => {
         if (!params?.id) return;
@@ -42,10 +45,12 @@ export default function Page() {
 
     const handleHint = async (id: number) => {
         id = Number(id)
-        const data = await call(`/api/hint/?type=ctf`, { method: "POST", body: JSON.stringify({ challenge_id: params.id, flag_id: id }) })
+        const flagObj = ctfFlags.find(el => el.id === id);
+        if (!flagObj) return;
+
+        const data = await call(`/api/hint/?type=ctf`, { method: "POST", body: JSON.stringify({ challenge_id: params.id, flag_id: id }) }, ["Vous venez de déverouiller cet indice !", `+${flagObj.hint_cost} coins !`])
         setCtfFlags(prev => prev.map((el) => el.id === id ? { ...el, hint_show: true } : el))
-        updateCoin(await data.coins)
-        showNotif("Vous venez de déverouiller cet indice !", "success")
+        updateCoin(data.currentCoin)
     }
 
     const handleValidate = async (id: number) => {
@@ -60,7 +65,7 @@ export default function Page() {
         }
 
         if (input === `${ctf?.flag_format}{${flagObj.flag}}`) {
-            await call(`/api/flags/?type=ctf`, { method: "POST", body: JSON.stringify({ challenge_id: params.id, flag_id: id }) }, "GG ! Vous venez de résoudre ce flag ");
+            const data = await call(`/api/flags/?type=ctf`, { method: "POST", body: JSON.stringify({ challenge_id: params.id, flag_id: id }) }, ["GG ! Vous venez de résoudre ce flag ", `+${flagObj.coin_reward} coins !`]);
 
             setCtfFlags(prev =>
                 prev.map(f =>
@@ -72,6 +77,8 @@ export default function Page() {
                 ...prev,
                 [id]: ""
             }));
+
+            updateCoin(data.currentCoin)
         } else {
             showNotif("Eh non, pas pour cette fois !")
         }
@@ -124,7 +131,7 @@ export default function Page() {
                                                 {v.hint_show ? (
                                                     <button disabled className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-green-600 hover:border-green-600 transition duration-500 cursor-pointer"><FaLightbulb /></button>
                                                 ) : (
-                                                    <button onClick={() => handleHint(v.id)} className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-yellow-300 hover:border-yellow-400 transition duration-500 cursor-pointer"><FaLightbulb /></button>
+                                                    <button onClick={() => { setSelectedFlag(v); setShowModalBool(true); }} className="h-11 w-11 flex items-center justify-center rounded-lg bg-[#2a2a3d] border border-gray-600 text-white hover:text-yellow-300 hover:border-yellow-400 transition duration-500 cursor-pointer"><FaLightbulb /></button>
                                                 )}
                                             </div>
                                         ) : (
@@ -145,6 +152,9 @@ export default function Page() {
                             )}
                         </div>
                     ))}
+                    {showModalBool && selectedFlag && (
+                        <ModalBool title="Confirmation de paiement d'indice" label={`Confirmez-vous payer ${selectedFlag.hint_cost} coins pour voir l'indice ?`} btn1="Confirmer" btn2="Annuler" onSelect={(value) => { if (value === "Confirmer") handleHint(selectedFlag.id); setShowModalBool(false); setSelectedFlag(null) }} />
+                    )}
                 </div>
             </div>
         </div >
