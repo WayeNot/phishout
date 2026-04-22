@@ -6,12 +6,16 @@ import { useState } from "react";
 import DropDown from "@/components/ui/DropDown";
 import { categoryBtn, difficultyBtn, NewCtfFlag, difficulty, category } from "@/lib/types";
 import { useCtfBuilderStore } from "@/stores/useCtfBuilderStore";
+import { IoMdClose } from "react-icons/io";
+import { MdOutlineDescription } from "react-icons/md";
 
 export default function CtfBuilder() {
 
     const { isOpen, setOpen, builder, setBuilder, flags, setFlags, selectedFiles, setSelectedFiles, resetBuilder } = useCtfBuilderStore();
     const [settings, setSettings] = useState({ difficulty: false, category: false, files: false, flags: false });
-    const [newFlag, setNewFlag] = useState<NewCtfFlag>({ title: "", description: "", flag: "", flag_format: "", hint: "", hint_cost: undefined, coin_reward: undefined, points: undefined });
+
+    const [newFlag, setNewFlag] = useState<NewCtfFlag>({ title: "", difficulty: "", description: "", flag: "", flag_format: "", hint: "", hint_cost: undefined, coins: undefined, points: undefined });
+    const [settingsNewFlag, setSettingsNewFlag] = useState({ difficulty: false });
     const [reward, setReward] = useState(0);
 
     if (!isOpen) return null;
@@ -22,7 +26,7 @@ export default function CtfBuilder() {
 
     const addFlag = () => {
         setFlags([...flags, newFlag]);
-        setNewFlag({ title: "", description: "", flag: "", flag_format: "", hint: "", hint_cost: undefined, coin_reward: undefined, points: undefined });
+        setNewFlag({ title: "", difficulty: "", description: "", flag: "", flag_format: "", hint: "", hint_cost: undefined, coins: undefined, points: undefined });
     };
 
     const removeFlag = (index: number) => {
@@ -32,14 +36,14 @@ export default function CtfBuilder() {
     const handleCreate = async () => {
         const formData = new FormData();
 
-        formData.append("type", "ctf");
         formData.append("title", builder.title);
         formData.append("description", builder.description);
         formData.append("difficulty", builder.difficulty);
         formData.append("category", JSON.stringify(builder.category));
         formData.append("flag_format", builder.flag_format);
         formData.append("flags", JSON.stringify(flags));
-        formData.append("reward", JSON.stringify(reward));
+        formData.append("coins", String(builder.coins));
+        formData.append("points", String(builder.points));
 
         selectedFiles.forEach(f => formData.append("files", f));
 
@@ -60,7 +64,7 @@ export default function CtfBuilder() {
                 <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl text-white flex flex-col shadow-2xl overflow-hidden">
                     <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#161625]">
                         <h1 className="text-sm font-bold tracking-wide">CTF Builder</h1>
-                        <span className="text-[10px] text-white/30">Plus aucune limite !</span>
+                        <button onClick={() => { resetBuilder(); setOpen(false); }} className="text-white/40 hover:text-white transition duration-500 cursor-pointer"><IoMdClose size={18} /></button>
                     </div>
                     <div className="p-4 space-y-4 overflow-y-auto max-h-[75vh]">
                         <div className="bg-[#1b1b2a] border border-white/5 rounded-xl p-3 space-y-2">
@@ -78,10 +82,10 @@ export default function CtfBuilder() {
                             <div className="text-[11px] text-white/40">Configuration du challenge</div>
                             <div className="grid grid-cols-2 gap-2">
                                 <div className="bg-[#232336] rounded-lg p-2">
-                                    <DropDown label="Difficulté" value={builder.difficulty} isOpen={settings.difficulty} options={difficultyBtn} onToggle={() => setSettings(s => ({ ...s, difficulty: !s.difficulty }))} onSelect={v => { setBuilder({ difficulty: v as difficulty }); setSettings({ ...settings, difficulty: false }) }} />
+                                    <DropDown isOnce label="Difficulté" value={builder.difficulty} isOpen={settings.difficulty} options={difficultyBtn} onToggle={() => setSettings(s => ({ ...s, difficulty: !s.difficulty }))} onSelect={v => { setBuilder({ difficulty: v as difficulty }); setSettings({ ...settings, difficulty: false }) }} />
                                 </div>
                                 <div className="bg-[#232336] rounded-lg p-2">
-                                    <DropDown label="Catégorie" value={builder.category} isOpen={settings.category} options={categoryBtn} onToggle={() => setSettings(s => ({ ...s, category: !s.category }))} onSelect={(v) => { setBuilder({ category: builder.category.includes(v as category) ? builder.category.filter(c => c !== v) : [...builder.category, v as category] }); }} />
+                                    <DropDown isOnce={false} label="Catégorie" value={builder.category} isOpen={settings.category} options={categoryBtn} onToggle={() => setSettings(s => ({ ...s, category: !s.category }))} onSelect={(v) => { setBuilder({ category: builder.category.includes(v as category) ? builder.category.filter(c => c !== v) : [...builder.category, v as category] }); }} />
                                 </div>
                             </div>
                         </div>
@@ -101,9 +105,9 @@ export default function CtfBuilder() {
                     </div>
                 </div>
                 <div className="w-1/2 bg-[#12121c] border border-white/10 rounded-2xl p-6 text-white space-y-5 shadow-2xl">
-                    <div className="flex items-center justify-center gap-2">
-                        <span className="text-orange-400">📊</span>
-                        <h1 className="text-xl font-bold">Aperçu en direct</h1>
+                    <div className="flex items-center justify-between">
+                        <h2 className="font-bold flex items-center gap-2 text-white/90"><MdOutlineDescription className="text-orange-400 text-lg" />Aperçu</h2>
+                        <span className="text-xs px-2 py-1 rounded-full bg-white/5 border border-white/10 text-white/40">🔴 - live preview</span>
                     </div>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                         <div className="bg-[#1a1a28] p-3 rounded-xl border border-white/5">
@@ -129,11 +133,11 @@ export default function CtfBuilder() {
                             <p className="text-white font-medium">{builder.category.length ? builder.category.join(", ") : "N/A"}</p>
                         </div>
                         <div className="bg-[#1a1a28] p-3 rounded-xl border border-white/5">
-                            <div className="flex items-center gap-2 text-white/50">💰 <span>Récompense</span></div>
+                            <div className="flex items-center gap-2 text-white/50">🪙 <span>Récompense ( coin )</span></div>
                             <p className="text-green-400 font-semibold">{builder.coins || "0"}</p>
                         </div>
                         <div className="bg-[#1a1a28] p-3 rounded-xl border border-white/5">
-                            <div className="flex items-center gap-2 text-white/50">🥇 <span>Points</span></div>
+                            <div className="flex items-center gap-2 text-white/50">🥇 <span>Récompense ( point )</span></div>
                             <p className="text-green-400 font-semibold">{builder.points || "0"}</p>
                         </div>
                     </div>
@@ -202,31 +206,34 @@ export default function CtfBuilder() {
             )}
             {settings.flags && (
                 <div className="fixed inset-0 bg-black/80 flex items-center justify-center">
-                    <div className="bg-[#1e1e2f] p-6 rounded-2xl w-180 text-white shadow-2xl space-y-5 border border-white/10">
+                    <div className="bg-[#1e1e2f] p-6 rounded-2xl w-2/7 text-white shadow-2xl space-y-5 border border-white/10">
                         <div className="text-center space-y-1">
                             <h2 className="text-xl font-bold">Création d’un flag</h2>
-                            <p className="text-white/40 text-xs">Configure précisément la validation du challenge</p>
+                            <p className="text-white/40 text-xs">Configure chaque flag a ta manière !</p>
                         </div>
-                        <div className="bg-[#2a2a3d] px-3 py-2 rounded-lg text-xs text-white/60">Format attendu : <span className="text-orange-400 font-semibold">Prénom_Nom</span></div>
+                        <div className="bg-[#2a2a3d] px-3 py-2 rounded-lg text-xs text-white/60">Format du flag attendu : <span className="text-orange-400 font-semibold">Prénom_Nom</span></div>
                         <div className="space-y-2">
                             <div className="grid grid-cols-2 gap-2">
                                 <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Titre" value={newFlag.title} onChange={e => setNewFlag({ ...newFlag, title: e.target.value })} />
-                                <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Format (Prénom_Nom)" value={newFlag.flag_format} onChange={e => setNewFlag({ ...newFlag, flag_format: e.target.value })} />
+                                <DropDown isOnce label="Difficulté" value={newFlag.difficulty} isOpen={settingsNewFlag.difficulty} options={difficultyBtn} onToggle={() => setSettingsNewFlag(s => ({ ...s, difficulty: !s.difficulty }))} onSelect={v => { setNewFlag({ ...newFlag, difficulty: v as difficulty }); setSettingsNewFlag({ ...settings, difficulty: false }) }} />
                             </div>
                             <textarea className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500 resize-none h-20" placeholder="Description" value={newFlag.description} onChange={e => setNewFlag({ ...newFlag, description: e.target.value })} />
-                            <input className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Flag attendu" value={newFlag.flag} onChange={e => setNewFlag({ ...newFlag, flag: e.target.value })} />
+                            <div className="grid grid-cols-2 gap-2">
+                                <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Format (Prénom_Nom)" value={newFlag.flag_format} onChange={e => setNewFlag({ ...newFlag, flag_format: e.target.value })} />
+                                <input className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Flag attendu" value={newFlag.flag} onChange={e => setNewFlag({ ...newFlag, flag: e.target.value })} />
+                            </div>
                             <div className="grid grid-cols-2 gap-2">
                                 <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Indice" value={newFlag.hint} onChange={e => setNewFlag({ ...newFlag, hint: e.target.value })} />
                                 <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Coût hint" type="number" onChange={e => setNewFlag({ ...newFlag, hint_cost: Number(e.target.value) })} />
                             </div>
                             <div className="grid grid-cols-2 gap-2">
-                                <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Coins" type="number" onChange={e => setNewFlag({ ...newFlag, coin_reward: Number(e.target.value) })} />
+                                <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Coins" type="number" onChange={e => setNewFlag({ ...newFlag, coins: Number(e.target.value) })} />
                                 <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Points" type="number" onChange={e => setNewFlag({ ...newFlag, points: Number(e.target.value) })} />
                             </div>
                         </div>
                         <div className="flex gap-2 pt-1">
-                            <button onClick={addFlag} className="flex-1 bg-green-600 hover:bg-green-500 transition py-1.5 rounded-lg text-sm font-medium">Ajouter</button>
                             <button onClick={() => setSettings(s => ({ ...s, flags: false }))} className="flex-1 bg-red-600 hover:bg-red-500 transition py-1.5 rounded-lg text-sm font-medium">Fermer</button>
+                            <button onClick={addFlag} className="flex-1 bg-green-600 hover:bg-green-500 transition py-1.5 rounded-lg text-sm font-medium">Ajouter</button>
                         </div>
                     </div>
                 </div>

@@ -15,7 +15,7 @@ export async function GET(req: Request) {
         const challengeType = searchParams.get("type");
 
         if (challengeType === "ctf") {
-            const result = await sql`SELECT id, title, difficulty FROM ctf`;
+            const result = await sql`SELECT id, title, difficulty FROM ctf WHERE status = 'active'`;
             return NextResponse.json(result)
         }
 
@@ -75,7 +75,8 @@ export async function POST(req: Request) {
             const flag_format = form.get("flag_format") as string;
             const files = form.getAll("files") as File[];
             const flags = JSON.parse(form.get("flags") as string);
-            const coin_reward = JSON.parse(form.get("reward") as string);
+            const coins = JSON.parse(form.get("coins") as string);
+            const points = JSON.parse(form.get("points") as string);
 
             if (!title || !description || !difficulty || !category || !flag_format) {
                 return NextResponse.json({ success: false, error: "Missing fields" }, { status: 400 });
@@ -87,17 +88,11 @@ export async function POST(req: Request) {
                     .map(file => uploadFile(file))
             );
 
-            const file_to_download = uploadedFiles.length > 0 ? uploadedFiles : null;
+            const file_to_download = uploadedFiles.length > 0 ? uploadedFiles : null;            
 
-            const result = await sql`
-                INSERT INTO ctf 
-                (title, description, difficulty, category, flag_format, files, creator_id)
-                VALUES 
-                (${title}, ${description}, ${difficulty}, ${category}, ${flag_format}, ${file_to_download}, ${user_id})
-                RETURNING id
-            `;
+            const result = await sql`INSERT INTO ctf (title, description, difficulty, category, flag_format, files, status, creator_id, coins, points) VALUES (${title}, ${description}, ${difficulty}, ${category}, ${flag_format}, ${file_to_download}, 'submited', ${user_id}, ${Number(coins)}, ${Number(points)}) RETURNING id`;
 
-            for (const flag of flags) await sql`INSERT INTO flags (challenge_id, challenge_type, title, flag, flag_format, description, hint, hint_cost, coin_reward) VALUES (${result[0].id}, ${type}, ${flag.title}, ${flag.flag}, ${flag.flag_format || "x"}, ${flag.description}, ${flag.hint}, ${flag.hint_cost || 0}, ${Number(coin_reward) || 0} )`
+            for (const flag of flags) await sql`INSERT INTO flags (challenge_id, challenge_type, title, flag, flag_format, description, hint, hint_cost, coins, points, difficulty) VALUES (${result[0].id}, ${type}, ${flag.title}, ${flag.flag}, ${flag.flag_format || "x"}, ${flag.description}, ${flag.hint}, ${flag.hint_cost || 0}, ${Number(flag.coins) || 0}, ${Number(flag.points) || 0}, ${flag.difficulty} )`
 
             return NextResponse.json({
                 success: true,

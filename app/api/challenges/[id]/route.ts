@@ -1,5 +1,6 @@
+import { staff_role } from "@/lib/config";
 import { sql } from "@/lib/db";
-import { getUserIdBySessionId } from "@/lib/session";
+import { getRole, getUserIdBySessionId } from "@/lib/session";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -10,11 +11,12 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         const challengeType = searchParams.get("type");
 
         const cookieStore = await cookies()
-        const user_id = await getUserIdBySessionId(cookieStore.get('session_id')?.value) 
-        const isGuest = cookieStore.get('isGuest')?.value     
+        const user_id = await getUserIdBySessionId(cookieStore.get('session_id')?.value)
+        const role = await getRole(user_id)
 
         if (challengeType === "ctf") {
-            const ctf = await sql`SELECT * FROM ctf WHERE id = ${id}`;
+            const ctf = await sql`SELECT * FROM ctf WHERE id = ${id} LIMIT 1`;
+            if (ctf[0].status !== "active" && role && !staff_role.includes(role)) return NextResponse.json({ success: false, error: "Vous n'avez pas les authorisations !"}, { status: 401 })
             const flags = await sql`SELECT * FROM flags WHERE challenge_type = ${challengeType} AND challenge_id = ${id} ORDER BY id ASC`;
             const flag_find = await sql`SELECT * FROM flag_find WHERE user_id = ${user_id} AND challenge_id = ${id} AND type = ${challengeType}`
             const hint_show = await sql`SELECT * FROM hint_show WHERE user_id = ${user_id} AND challenge_id = ${id} AND type = ${challengeType}`

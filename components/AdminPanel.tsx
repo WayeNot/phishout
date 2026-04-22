@@ -94,7 +94,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         <div id="overlay" className="fixed inset-0 z-50 flex items-center justify-center gap-15 bg-black/70 backdrop-blur-sm">
             <div className="w-9/10 h-3/4 bg-[#1e1e2f] border border-gray-700 rounded-2xl shadow-2xl p-6 animate-fadeIn">
                 <div className="flex flex-col gap-5 max-h-[50vh] overflow-y-auto pr-2 text-center text-white/70">
-                    <h2 className="text-orange-500 italic font-bold">Panel admin - CTF Platform</h2>
+                    <h2 className="text-orange-500 italic font-bold">Panel staff - FlagCore</h2>
                 </div>
                 <hr className="my-5 border-gray-600" />
                 <div className="flex justify-between items-center mb-4">

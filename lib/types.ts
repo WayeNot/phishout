@@ -122,11 +122,12 @@ export type CtfBuilderState = {
 
 export type NewCtfFlag = {
     title: string
+    difficulty: difficulty | ""
     description: string
     flag: string
     flag_format: string
     hint: string
     hint_cost?: number
-    coin_reward?: number
+    coins?: number
     points?: number
 }
