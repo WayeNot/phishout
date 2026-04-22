@@ -28,7 +28,7 @@ export default function GeointBuilder({ onClose, onCreate }: any) {
                                 <input placeholder=" " className="peer w-full bg-[#232336] p-2 pt-4 rounded-lg text-sm outline-none border border-white/5 focus:border-orange-500" value={builder.title} onChange={e => handleChange("title", e.target.value)} />
                                 <label className="absolute left-2 top-1 text-[10px] text-white/40 peer-placeholder-shown:top-2.5 peer-placeholder-shown:text-xs peer-placeholder-shown:text-white/30 transition-all">Nom du challenge</label>
                             </div>
-                            <DropDown label="Difficulté" value={builder.difficulty} isOpen={difficultyOpen} options={difficultyBtn} onToggle={() => setDifficultyOpen(!difficultyOpen)} onSelect={(v) => handleChange("difficulty", v as difficulty)} />
+                            <DropDown isOnce label="Difficulté" value={builder.difficulty} isOpen={difficultyOpen} options={difficultyBtn} onToggle={() => setDifficultyOpen(!difficultyOpen)} onSelect={(v) => handleChange("difficulty", v as difficulty)} />
                         </div>
                         <div className="flex gap-2">
                             <div className="relative w-1/2">
