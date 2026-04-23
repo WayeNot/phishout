@@ -6,6 +6,8 @@ import { useNavData } from "@/stores/store";
 
 export default function Home() {
 
+    const { role } = useNavData()
+
     const tools = [
         { name: "Tools" },
         { name: "GEOINT" },
