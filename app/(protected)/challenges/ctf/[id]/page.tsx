@@ -2,7 +2,7 @@
 
 import { useNotif } from '@/components/NotifProvider'
 import { useApi } from '@/hooks/useApi'
-import { ctf, ctf_flags } from '@/lib/types'
+import { ctf, flags } from '@/lib/types'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
@@ -16,18 +16,21 @@ import ModalText from '@/components/ui/ModalText'
 
 export default function Page() {
     const { showNotif } = useNotif()
-    const { updateCoin } = useNavData()
+    const { updateCoins, updatePoints } = useNavData()
     const { call } = useApi()
     const params = useParams();
     const router = useRouter();
 
     const [ctf, setCtf] = useState<ctf>()
-    const [ctfFlags, setCtfFlags] = useState<ctf_flags[]>([])
+    const [ctfFlags, setCtfFlags] = useState<flags[]>([])
     const [currentFlags, setCurrentFlags] = useState<Record<number, string>>({})
 
     const [showModalBool, setShowModalBool] = useState(false)
     const [showModalText, setShowModalText] = useState(false)
-    const [selectedFlag, setSelectedFlag] = useState<ctf_flags | null>(null);
+    const [selectedFlag, setSelectedFlag] = useState<flags | null>(null);
+
+    const foundCount = ctfFlags.filter(el => el.found).length;
+    const flagsLen = ctfFlags.length
 
     useEffect(() => {
         if (!params?.id) return;
@@ -40,13 +43,13 @@ export default function Page() {
                 showNotif(data.error)
                 return
             }
-            if (!data.ctf) {
+            if (!data.challenge) {
                 router.refresh()
                 router.push("/challenges")
-                showNotif("Ce CTF n'existe pas / plus !")
+                showNotif("Ce challenge n'existe pas / plus !")
                 return
             }
-            setCtf(data.ctf)
+            setCtf(data.challenge)
             setCtfFlags(data.flags)
         }
         getCtf()
@@ -59,7 +62,7 @@ export default function Page() {
 
         const data = await call(`/api/hint/?type=ctf`, { method: "POST", body: JSON.stringify({ challenge_id: params.id, flag_id: id }) }, ["Vous venez de déverouiller cet indice !", `-${flagObj.hint_cost} coins !`])
         setCtfFlags(prev => prev.map((el) => el.id === id ? { ...el, hint_show: true } : el))
-        updateCoin(data.currentCoin)
+        updateCoins(data.currentCoins)
         setShowModalBool(false);
         setShowModalText(true)
     }
@@ -76,7 +79,7 @@ export default function Page() {
         }
 
         if (input === `${ctf?.flag_format}{${flagObj.flag}}`) {
-            const data = await call(`/api/flags/?type=ctf`, { method: "POST", body: JSON.stringify({ challenge_id: params.id, flag_id: id }) }, ["GG ! Vous venez de résoudre ce flag ", `+${flagObj.coin_reward} coins !`]);
+            const data = await call(`/api/flags/?type=ctf`, { method: "POST", body: JSON.stringify({ challenge_id: params.id, flag_id: id }) }, ["GG ! Vous venez de résoudre ce flag ", `+${flagObj.coins} coins | +${flagObj.points} points !`]);
 
             setCtfFlags(prev =>
                 prev.map(f =>
@@ -89,14 +92,19 @@ export default function Page() {
                 [id]: ""
             }));
 
-            updateCoin(data.currentCoin)
+            updateCoins(data.currentCoins)
+            updatePoints(Number(data.currentPoint))
+
+            if (data.challengeEnd) {
+                updateCoins(Number(data?.currentCoins))
+                updatePoints(Number(data?.currentPoint))
+                showNotif("GG, vous venez de terminer le challenge !", "success")
+                showNotif(`+${ctf?.coins} coins | +${ctf?.points} points !`, "success")
+            }
         } else {
             showNotif("Eh non, pas pour cette fois !")
         }
     };
-
-    const foundCount = ctfFlags.filter(el => el.found).length;
-    const flagsLen = ctfFlags.length
 
     return (
         <div className="flex flex-col bg-[#212529]">

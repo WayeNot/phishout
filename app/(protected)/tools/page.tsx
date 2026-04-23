@@ -5,7 +5,6 @@ import Link from "next/link"
 import { useNavData } from "@/stores/store";
 
 export default function Home() {
-    const { isGuest, updateIsGuest, user_id, updateUserId, username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coin, updateCoin } = useNavData()
 
     const tools = [
         { name: "Tools" },

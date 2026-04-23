@@ -17,20 +17,20 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
         let newSold = 0;
 
-        if (operation === "add_coin") {
-            const currentCoin = await sql`UPDATE users SET coin = coin + ${value} WHERE user_id = ${id} RETURNING coin`;
-            newSold = currentCoin[0].coin;
-        } else if (operation === "remove_coin") {
-            const getCoin = await sql`SELECT coin FROM users WHERE user_id = ${id}`;
-            if (getCoin[0].coin - value < 0) return NextResponse.json({ success: false, error: "Impossible de retirer plus que ce qu'il possède déjà !" }, { status: 500 })
-            const currentCoin = await sql`UPDATE users SET coin = ${getCoin[0].coin - value} WHERE user_id = ${id} RETURNING coin`;
-            newSold = currentCoin[0].coin
-        } else if (operation === "reset_coin") {
-            await sql`UPDATE users SET coin = coin - coin WHERE user_id = ${id}`;
+        if (operation === "add_coins") {
+            const currentCoins = await sql`UPDATE users SET coins = coins + ${value} WHERE user_id = ${id} RETURNING coins`;
+            newSold = currentCoins[0].coins;
+        } else if (operation === "remove_coins") {
+            const getCoins = await sql`SELECT coins FROM users WHERE user_id = ${id}`;
+            if (getCoins[0].coins - value < 0) return NextResponse.json({ success: false, error: "Impossible de retirer plus que ce qu'il possède déjà !" }, { status: 500 })
+            const currentCoins = await sql`UPDATE users SET coins = ${getCoins[0].coins - value} WHERE user_id = ${id} RETURNING coins`;
+            newSold = currentCoins[0].coins
+        } else if (operation === "reset_coins") {
+            await sql`UPDATE users SET coins = coins - coins WHERE user_id = ${id}`;
             newSold = 0
         } else if (operation === "set_coin") {
-            const currentCoin = await sql`UPDATE users SET coin = ${value} WHERE user_id = ${id} RETURNING coin`;
-            newSold = currentCoin[0].coin;
+            const currentCoins = await sql`UPDATE users SET coins = ${value} WHERE user_id = ${id} RETURNING coins`;
+            newSold = currentCoins[0].coins;
         }
 
         await sql`INSERT INTO transactions (user_id, staff_id, amount, type, reason) VALUES (${Number(id)}, ${Number(staff_id)}, ${Number(value)}, ${operation}, ${reason || ""})`;

@@ -17,7 +17,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const { showNotif } = useNotif()
     const { call } = useApi()
 
-    const { username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coin, updateCoin } = useNavData()
+    const { coins, updateCoins } = useNavData()
 
     const [panelTab, setPanelTab] = useState(0)
 
@@ -56,11 +56,11 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         setInMaintenance(!inMaintenance)
     }
 
-    const updateCoins = async (value: number, reason: string) => {
-        const data = await call(`/api/users/${editUser}/coin/`, { method: "PATCH", body: JSON.stringify({ operation: `${value < 0 ? "remove_coin" : "add_coin"}`, value: Math.abs(value), reason: reason || "" }) }, ["Nombre de coin bien mis à jour !"])
-        setUsers(prev => prev.map(user => user.user_id === editUser ? { ...user, coin: data.newSold } : user))
+    const updateCoin = async (value: number, reason: string) => {
+        const data = await call(`/api/users/${editUser}/coin/`, { method: "PATCH", body: JSON.stringify({ operation: `${value < 0 ? "remove_coins" : "add_coins"}`, value: Math.abs(value), reason: reason || "" }) }, ["Nombre de coins bien mis à jour !"])
+        setUsers(prev => prev.map(user => user.user_id === editUser ? { ...user, coins: data.newSold } : user))
         setShowModal(null)
-        updateCoin(data.newSold)
+        updateCoins(data.newSold)
     }
 
     const setCoins = async (value: any, reason: string = "") => {
@@ -78,16 +78,16 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
             return
         }
         setShowModal(null)
-        const data = await call(`/api/users/${editUser}/coin`, { method: "PATCH", body: JSON.stringify({ operation: "set_coin", value: Math.abs(num), reason: reason || "" }) }, ["Nombre de coin set avec succès !"])
-        setUsers(prev => prev.map(user => user.user_id === editUser ? { ...user, coin: data.newSold } : user))
-        updateCoin(data.newSold)
+        const data = await call(`/api/users/${editUser}/coin`, { method: "PATCH", body: JSON.stringify({ operation: "set_coins", value: Math.abs(num), reason: reason || "" }) }, ["Nombre de coins set avec succès !"])
+        setUsers(prev => prev.map(user => user.user_id === editUser ? { ...user, coins: data.newSold } : user))
+        updateCoins(data.newSold)
     }
 
-    const resetCoin = async (reason: string = "") => {
-        await call(`/api/users/${editUser}/coin`, { method: "PATCH", body: JSON.stringify({ operation: "reset_coin", value: 0, reason: reason || "" }) }, ["Nombre de coin reset avec succès !"])
-        setUsers(prev => prev.map(user => user.user_id === editUser ? { ...user, coin: 0 } : user))
+    const resetCoins = async (reason: string = "") => {
+        await call(`/api/users/${editUser}/coin`, { method: "PATCH", body: JSON.stringify({ operation: "reset_coins", value: 0, reason: reason || "" }) }, ["Nombre de coins reset avec succès !"])
+        setUsers(prev => prev.map(user => user.user_id === editUser ? { ...user, coins: 0 } : user))
         setShowModal(null)
-        updateCoin(0)
+        updateCoins(0)
     }
 
     return (
@@ -155,7 +155,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                             <p className="flex items-center gap-2">Actuellement connecté ?<span className={el.is_online ? "text-green-500" : "text-red-500"}>{el.is_online ? "En ligne" : "Hors ligne"}</span></p>
                                             <Link href={`mailto:${el.email}`} className="flex items-center gap-2 font-bold italic w-fit text-[20px] text-orange-400 transition duration-500 hover:text-orange-500"><MdAlternateEmail className="text-[25px]" /> - {el.email}</Link>
                                             <p className="flex items-center gap-2 font-bold w-fit text-[25px] text-orange-400 transition duration-500 hover:text-orange-500 cursor-pointer"><LuCalendar1 /> - {new Date(el.created_at).toLocaleString()}</p>
-                                            <p onClick={() => setPanelUser(1)} className="flex items-center gap-2 font-bold w-fit text-[25px] text-orange-400 transition duration-500 hover:text-orange-500 cursor-pointer"><TbCoinRupeeFilled /> - {el.coin || 0}</p>
+                                            <p onClick={() => setPanelUser(1)} className="flex items-center gap-2 font-bold w-fit text-[25px] text-orange-400 transition duration-500 hover:text-orange-500 cursor-pointer"><TbCoinRupeeFilled /> - {el.coins || 0}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -166,13 +166,13 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                         <h2 className="text-white/40 text-[20px] font-bold w-fit">Ajout / Retrait de coins : </h2>
                                         <div className="flex items-center gap-3 w-auto">
                                             {coinManagement.map((v, k) => (
-                                                <button key={k} onClick={() => updateCoins(Number(v), "")} className="w-fit text-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer">{v}</button>
+                                                <button key={k} onClick={() => updateCoin(Number(v), "")} className="w-fit text-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer">{v}</button>
                                             ))}
                                         </div>
                                     </div>
                                     <div className="w-full flex items-center">
-                                        <button onClick={() => setShowModal("set")} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Modifier le nombre de coin</button>
-                                        <button onClick={() => setShowModal("reset")} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Reset le nombre de coin</button>
+                                        <button onClick={() => setShowModal("set")} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Modifier le nombre de coins</button>
+                                        <button onClick={() => setShowModal("reset")} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Reset le nombre de coins</button>
                                     </div>
                                 </div>
                             )}
@@ -180,7 +180,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                     </div>
                 )}
                 {showModal === "set" && <InputNumber title="Modifier les coins" onClose={() => setShowModal(null)} onValidate={({ input1, input2 }) => { setCoins(input1, input2) }} input1={{ display: true, placeholder: "Nombre de coins", type: "number" }} input2={{ display: true, placeholder: "Raison" }} />}
-                {showModal === "reset" && <InputNumber title="Reset des coins" onClose={() => setShowModal(null)} onValidate={({ input2 }) => { resetCoin(input2) }} input2={{ display: true, placeholder: "Raison" }} />}
+                {showModal === "reset" && <InputNumber title="Reset des coins" onClose={() => setShowModal(null)} onValidate={({ input2 }) => { resetCoins(input2) }} input2={{ display: true, placeholder: "Raison" }} />}
             </div>
         </div>
     )

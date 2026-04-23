@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const [user, setUser] = useState<User | null>(null)
     const [guest, setGuest] = useState(false)
 
-    const { isGuest, updateIsGuest, user_id, updateUserId, username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coin, updateCoin } = useNavData()
+    const { isGuest, updateIsGuest, user_id, updateUserId, username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coins, updateCoins, updatePoints } = useNavData()
 
     useEffect(() => {
         const getSession = async () => {
@@ -35,7 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 updateUserId(data.user_id)
                 if (data.isGuest) {
                     setGuest(true)
-                    setUser({ username: "Invité", status: "online", user_id: Date.now(), role: "guest", pp_url: default_pp, password: "", is_online: true, email: "guest@invite.com", coin: 9999, created_at: "" })
+                    setUser({ username: "Invité", status: "online", user_id: Date.now(), role: "guest", pp_url: default_pp, password: "", is_online: true, email: "guest@invite.com", coins: 9999, points: 9999, created_at: "" })
                     return
                 }
                 setGuest(false)
@@ -54,7 +54,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         updateRole(user?.role ? [user.role] : []);
         updatePp_url(user?.pp_url ?? "");
         updateStatus(user?.status ?? "offline");
-        updateCoin(user?.coin ?? 0);
+        updateCoins(user?.coins ?? 0);
+        updatePoints(user?.points ?? 0);
     }, [user]);
 
     return (

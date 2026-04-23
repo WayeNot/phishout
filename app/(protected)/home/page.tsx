@@ -4,7 +4,7 @@ import { useNavData } from "@/stores/store";
 import { motion } from "motion/react"
 
 export default function Home() {
-    const { isGuest, updateIsGuest, username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coin, updateCoin } = useNavData()
+    const { username } = useNavData()
     let date = new Date();
 
     return (

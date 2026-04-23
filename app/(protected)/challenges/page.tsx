@@ -19,7 +19,7 @@ export default function Home() {
     const { call } = useApi();
     const router = useRouter();
 
-    const { isGuest, updateIsGuest, username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coin, updateCoin } = useNavData()
+    const { isGuest, role } = useNavData()
 
     const [tab, setTab] = useState<0 | 1>(0);
     const [ctf, setCtf] = useState<ctf[]>([]);

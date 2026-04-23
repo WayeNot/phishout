@@ -31,57 +31,57 @@ export type User = {
     password: string
     role: Role
     created_at: string
-    coin: number
+    coins: number
+    points: number
     pp_url: string
     status: Status
     is_online: boolean
 }
 
 export type geoint = {
-    id: number
-    title: string
-    description: string
-    image: string
-    difficulty: difficulty
-    flag: string
-    hint: string
-    cost_hint: number
-    points: number
-}
-
-export type flag_geoint = {
-    title: string
-    flag: string
-    format: string
-    description: string
-    indice: string
+    id: number;
+    title: string;
+    description: string;
+    difficulty: difficulty | "";
+    flag_format: string;
+    images: string[];
+    status: string;
+    creatord_id: number;
+    created_at: string;
+    coins?: number;
+    points?: number;
 }
 
 export type ctf = {
-    id: number
-    title: string
-    description: string
-    difficulty: difficulty
-    category: category[]
-    flag_format: string
-    files: string[]
-    is_public: boolean
-    creator_id: number
-    created_at: string
+    id: number;
+    title: string;
+    description: string;
+    difficulty: difficulty;
+    category: category[];
+    flag_format: string;
+    files: string[];
+    status: string;
+    creator_id: number;
+    created_at: string;
+    coins?: number;
+    points?: number;
 }
 
-export interface ctf_flags {
+export interface flags {
     id: number;
-    ctf_id: number;
+    challenge_id: number;
     title: string;
     flag: string;
     flag_format: string;
     description: string;
     hint: string;
     hint_cost?: number;
+    challenge_type: string;
+    coins: number;
+    difficulty: string;
+    points: number;
     hint_show: boolean;
     found: boolean;
-    coin_reward: number;
 }
 
 // Geoint Builder ↓
@@ -90,24 +90,11 @@ export type GeointBuilderState = {
     title: string;
     description: string;
     difficulty: difficulty | "";
-    image: string;
-    flag: string;
-    hint: string;
-    hint_cost?: number;
-    coin_reward?: number
+    flag_format: string;
+    images: string[];
+    coins?: number;
     points?: number;
 };
-
-// export type NewGeointFlag = {
-//     title: string
-//     description: string
-//     flag: string
-//     flag_format: string
-//     hint: string
-//     hint_cost?: number
-//     coin_reward?: number
-//     points?: number
-// }
 
 // CTF Builder ↓
 

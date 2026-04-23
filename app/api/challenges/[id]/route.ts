@@ -12,26 +12,22 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
         const cookieStore = await cookies()
         const user_id = await getUserIdBySessionId(cookieStore.get('session_id')?.value)
-        const role = await getRole(user_id)
+        const role = await getRole(user_id)                
 
-        if (challengeType === "ctf") {
-            const ctf = await sql`SELECT * FROM ctf WHERE id = ${id} LIMIT 1`;
-            if (ctf[0].status !== "active" && role && !staff_role.includes(role)) return NextResponse.json({ success: false, error: "Vous n'avez pas les authorisations !"}, { status: 401 })
-            const flags = await sql`SELECT * FROM flags WHERE challenge_type = ${challengeType} AND challenge_id = ${id} ORDER BY id ASC`;
-            const flag_find = await sql`SELECT * FROM flag_find WHERE user_id = ${user_id} AND challenge_id = ${id} AND type = ${challengeType}`
-            const hint_show = await sql`SELECT * FROM hint_show WHERE user_id = ${user_id} AND challenge_id = ${id} AND type = ${challengeType}`
+        const challenge = await sql`SELECT * FROM challenges WHERE type = ${challengeType} AND id = ${id} LIMIT 1`;        
 
-            const foundFlags = new Set(flag_find.map((f: any) => f.flag_id));
-            const shownHints = new Set(hint_show.map((h: any) => h.flag_id));
+        if (!challenge.length) return NextResponse.json({ success: false, error: "Challenge introuvable" }, { status: 404 });
 
-            const flagsWithStatus = flags.map((flag: any) => ({...flag, found: foundFlags.has(flag.id), hint_show: shownHints.has(flag.id) }));
-            return NextResponse.json({ ctf: ctf[0], flags: flagsWithStatus })
-        }
-        if (challengeType === "geoint") {
-            const result = await sql`SELECT * FROM geoint WHERE id = ${id}`;
-            return NextResponse.json(result[0])
-        }
-        return NextResponse.json({ success: true })
+        if (challenge[0].status !== "active" && role && !staff_role.includes(role)) return NextResponse.json({ success: false, error: "Vous n'avez pas les autorisations !" }, { status: 401 })
+        const flags = await sql`SELECT * FROM flags WHERE challenge_type = ${challengeType} AND challenge_id = ${id} ORDER BY id ASC`;
+        const flag_find = await sql`SELECT * FROM flag_find WHERE user_id = ${user_id} AND challenge_id = ${id} AND type = ${challengeType}`
+        const hint_show = await sql`SELECT * FROM hint_show WHERE user_id = ${user_id} AND challenge_id = ${id} AND type = ${challengeType}`
+
+        const foundFlags = new Set(flag_find.map((f: any) => f.flag_id));
+        const shownHints = new Set(hint_show.map((h: any) => h.flag_id));
+
+        const flagsWithStatus = flags.map((flag: any) => ({ ...flag, found: foundFlags.has(flag.id), hint_show: shownHints.has(flag.id) }));        
+        return NextResponse.json({ challenge: challenge[0], flags: flagsWithStatus })
     } catch (err) {
         console.error(err)
         return NextResponse.json({ success: false, error: "DB Error" }, { status: 500 })

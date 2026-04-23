@@ -8,15 +8,16 @@ import { categoryBtn, difficultyBtn, NewCtfFlag, difficulty, category } from "@/
 import { useCtfBuilderStore } from "@/stores/useCtfBuilderStore";
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineDescription } from "react-icons/md";
+import { useNotif } from "@/components/NotifProvider";
 
 export default function CtfBuilder() {
+    const { showNotif } = useNotif()
 
     const { isOpen, setOpen, builder, setBuilder, flags, setFlags, selectedFiles, setSelectedFiles, resetBuilder } = useCtfBuilderStore();
     const [settings, setSettings] = useState({ difficulty: false, category: false, files: false, flags: false });
 
     const [newFlag, setNewFlag] = useState<NewCtfFlag>({ title: "", difficulty: "", description: "", flag: "", flag_format: "", hint: "", hint_cost: undefined, coins: undefined, points: undefined });
     const [settingsNewFlag, setSettingsNewFlag] = useState({ difficulty: false });
-    const [reward, setReward] = useState(0);
 
     if (!isOpen) return null;
 
@@ -35,22 +36,43 @@ export default function CtfBuilder() {
 
     const handleCreate = async () => {
         const formData = new FormData();
-
-        formData.append("title", builder.title);
-        formData.append("description", builder.description);
-        formData.append("difficulty", builder.difficulty);
-        formData.append("category", JSON.stringify(builder.category));
-        formData.append("flag_format", builder.flag_format);
-        formData.append("flags", JSON.stringify(flags));
-        formData.append("coins", String(builder.coins));
-        formData.append("points", String(builder.points));
-
         selectedFiles.forEach(f => formData.append("files", f));
+
+        const res = await fetch("/api/challenges/uploadFiles", {
+            method: "POST",
+            body: formData
+        })
+
+        if (!res.ok) {
+            const err = await res.json()
+            showNotif(err.error, "error")
+            return
+        }
+
+        const files = await res.json();
 
         await fetch("/api/challenges?type=ctf", {
             method: "POST",
-            body: formData
-        });
+            body: JSON.stringify({ challenge: builder, flags: flags, files: files.files })
+        })
+
+        // const data = res.json()
+
+        // formData.append("title", builder.title);
+        // formData.append("description", builder.description);
+        // formData.append("difficulty", builder.difficulty);
+        // formData.append("category", JSON.stringify(builder.category));
+        // formData.append("flag_format", builder.flag_format);
+        // formData.append("flags", JSON.stringify(flags));
+        // formData.append("coins", String(builder.coins));
+        // formData.append("points", String(builder.points));
+
+        // selectedFiles.forEach(f => formData.append("files", f));
+
+        // await fetch("/api/challenges?type=ctf", {
+        //     method: "POST",
+        //     body: formData
+        // });
 
         resetBuilder();
         setOpen(false);
@@ -90,10 +112,10 @@ export default function CtfBuilder() {
                             </div>
                         </div>
                         <div className="bg-[#1b1b2a] border border-white/5 rounded-xl p-3 space-y-2">
-                            <div className="text-[11px] text-white/40">Récompense du challenge ( 🪙 - Coin / 🥇 - Points )</div>
+                            <div className="text-[11px] text-white/40">Récompense du challenge ( 🪙 - Coins / 🥇 - Points )</div>
                             <div className="grid grid-cols-2 gap-2">
                                 <input className="w-full p-2 bg-[#232336] rounded-lg text-xs outline-none border border-white/5 focus:border-green-500 transition" placeholder="Récompense de points global" type="number" value={builder.coins} onChange={e => setBuilder({ coins: Number(e.target.value) })} />
-                                <input className="w-full p-2 bg-[#232336] rounded-lg text-xs outline-none border border-white/5 focus:border-green-500 transition" placeholder="Récompense en coin" type="number" value={builder.points} onChange={e => setBuilder({ points: Number(e.target.value) })} />
+                                <input className="w-full p-2 bg-[#232336] rounded-lg text-xs outline-none border border-white/5 focus:border-green-500 transition" placeholder="Récompense en coins" type="number" value={builder.points} onChange={e => setBuilder({ points: Number(e.target.value) })} />
                             </div>
                         </div>
                     </div>
@@ -133,7 +155,7 @@ export default function CtfBuilder() {
                             <p className="text-white font-medium">{builder.category.length ? builder.category.join(", ") : "N/A"}</p>
                         </div>
                         <div className="bg-[#1a1a28] p-3 rounded-xl border border-white/5">
-                            <div className="flex items-center gap-2 text-white/50">🪙 <span>Récompense ( coin )</span></div>
+                            <div className="flex items-center gap-2 text-white/50">🪙 <span>Récompense ( coins )</span></div>
                             <p className="text-green-400 font-semibold">{builder.coins || "0"}</p>
                         </div>
                         <div className="bg-[#1a1a28] p-3 rounded-xl border border-white/5">

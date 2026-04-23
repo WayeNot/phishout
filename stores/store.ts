@@ -9,7 +9,8 @@ type NavState = {
     role: Role[];
     pp_url: string;
     status: Status;
-    coin: number;
+    coins: number;
+    points: number;
 
     updateIsGuest: (v: boolean) => void;
     updateUserId: (v: number) => void;
@@ -18,7 +19,8 @@ type NavState = {
     updateRole: (v: Role[]) => void;
     updatePp_url: (v: string) => void;
     updateStatus: (v: Status) => void;
-    updateCoin: (v: number) => void;
+    updateCoins: (v: number) => void;
+    updatePoints: (v: number) => void;
 };
 
 export const useNavData = create<NavState>((set) => ({    
@@ -29,7 +31,8 @@ export const useNavData = create<NavState>((set) => ({
     role: [],
     pp_url: "",
     status: "offline",
-    coin: 0,
+    coins: 0,
+    points: 0,
 
     updateIsGuest: (v) => set({ isGuest: v}),
     updateUserId: (v) => set({ user_id: v}),
@@ -38,5 +41,6 @@ export const useNavData = create<NavState>((set) => ({
     updateRole: (v) => set({ role: v }),
     updatePp_url: (v) => set({ pp_url: v }),
     updateStatus: (v) => set({ status: v }),
-    updateCoin: (v) => set({ coin: v }),
+    updateCoins: (v) => set({ coins: v }),
+    updatePoints: (v) => set({ points: v }),
 }));

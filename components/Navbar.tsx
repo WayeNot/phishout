@@ -14,16 +14,17 @@ import { GiMusicSpell } from "react-icons/gi"
 import { useApi } from "@/hooks/useApi"
 import { IoMdCheckboxOutline } from "react-icons/io"
 import { FaFire } from "react-icons/fa"
+import { SiOpslevel } from "react-icons/si"
 
 export default function Navbar() {
     const { call } = useApi()
-    const { isGuest, updateIsGuest, user_id, updateUserId, username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coin, updateCoin } = useNavData()
+    const { user_id, username, status, role, pp_url, coins, points } = useNavData()
 
     const router = useRouter()
 
     const [menuOpen, setMenuOpen] = useState(false)
     const [showAdminPanel, setShowAdminPanel] = useState(false)
-    
+
     const handleLogout = async () => {
         await call("/api/auth/logout", { method: "POST" })
         router.refresh()
@@ -53,7 +54,11 @@ export default function Navbar() {
                         </Link>
                     </div>
                     <p className="text-white/40 text-[20px] mx-5"> | </p>
-                    <p className="flex items-center gap-3 text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600"><TbCoinRupeeFilled />{coin}</p>
+                    <div className="flex items-center">
+                        <p className="flex items-center gap-3 text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600"><TbCoinRupeeFilled />{coins}</p>
+                        <p className="text-white/40 text-[20px] mx-5"> | </p>
+                        <p className="flex items-center gap-3 text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600"><SiOpslevel />{points}</p>
+                    </div>
                 </div>
 
                 <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
