@@ -9,6 +9,7 @@ import { useCtfBuilderStore } from "@/stores/useCtfBuilderStore";
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineDescription } from "react-icons/md";
 import { useNotif } from "@/components/NotifProvider";
+import CreateFlag from "../CreateFlag";
 
 export default function CtfBuilder() {
     const { showNotif } = useNotif()
@@ -19,6 +20,7 @@ export default function CtfBuilder() {
     const [newFlag, setNewFlag] = useState<NewCtfFlag>({ title: "", difficulty: "", description: "", flag: "", flag_format: "", hint: "", hint_cost: undefined, coins: undefined, points: undefined });
     const [settingsNewFlag, setSettingsNewFlag] = useState({ difficulty: false });
 
+    const [displayFlags, setDisplayFlags] = useState(false)
     if (!isOpen) return null;
 
     const removeFile = (index: number) => {
@@ -55,24 +57,6 @@ export default function CtfBuilder() {
             method: "POST",
             body: JSON.stringify({ challenge: builder, flags: flags, files: files.files })
         })
-
-        // const data = res.json()
-
-        // formData.append("title", builder.title);
-        // formData.append("description", builder.description);
-        // formData.append("difficulty", builder.difficulty);
-        // formData.append("category", JSON.stringify(builder.category));
-        // formData.append("flag_format", builder.flag_format);
-        // formData.append("flags", JSON.stringify(flags));
-        // formData.append("coins", String(builder.coins));
-        // formData.append("points", String(builder.points));
-
-        // selectedFiles.forEach(f => formData.append("files", f));
-
-        // await fetch("/api/challenges?type=ctf", {
-        //     method: "POST",
-        //     body: formData
-        // });
 
         resetBuilder();
         setOpen(false);
@@ -121,7 +105,7 @@ export default function CtfBuilder() {
                     </div>
                     <div className="p-3 border-t border-white/10 bg-[#161625] grid grid-cols-2 gap-2">
                         <button onClick={() => setSettings(s => ({ ...s, files: true }))} className="bg-[#232336] hover:bg-[#2a2a3d] text-xs py-2 rounded-lg transition duration-500 cursor-pointer">📁 Fichiers</button>
-                        <button onClick={() => setSettings(s => ({ ...s, flags: true }))} className="bg-[#232336] hover:bg-[#2a2a3d] text-xs py-2 rounded-lg transition duration-500 cursor-pointer">🚩 Flags</button>
+                        <button onClick={() => setDisplayFlags(true)} className="bg-[#232336] hover:bg-[#2a2a3d] text-xs py-2 rounded-lg transition duration-500 cursor-pointer">🚩 Flags</button>
                         <button onClick={() => { resetBuilder(); setOpen(false); }} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 rounded-lg transition duration-500 cursor-pointer">Annuler</button>
                         <button disabled={!canCreate} onClick={handleCreate} className="bg-green-500/10 hover:bg-green-500/20 text-green-300 text-xs py-2 rounded-lg transition duration-500 disabled:opacity-40 cursor-pointer">Créer</button>
                     </div>
@@ -226,39 +210,8 @@ export default function CtfBuilder() {
                     </div>
                 </div>
             )}
-            {settings.flags && (
-                <div className="fixed inset-0 bg-black/80 flex items-center justify-center">
-                    <div className="bg-[#1e1e2f] p-6 rounded-2xl w-2/7 text-white shadow-2xl space-y-5 border border-white/10">
-                        <div className="text-center space-y-1">
-                            <h2 className="text-xl font-bold">Création d’un flag</h2>
-                            <p className="text-white/40 text-xs">Configure chaque flag a ta manière !</p>
-                        </div>
-                        <div className="bg-[#2a2a3d] px-3 py-2 rounded-lg text-xs text-white/60">Format du flag attendu : <span className="text-orange-400 font-semibold">Prénom_Nom</span></div>
-                        <div className="space-y-2">
-                            <div className="grid grid-cols-2 gap-2">
-                                <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Titre" value={newFlag.title} onChange={e => setNewFlag({ ...newFlag, title: e.target.value })} />
-                                <DropDown isOnce label="Difficulté" value={newFlag.difficulty} isOpen={settingsNewFlag.difficulty} options={difficultyBtn} onToggle={() => setSettingsNewFlag(s => ({ ...s, difficulty: !s.difficulty }))} onSelect={v => { setNewFlag({ ...newFlag, difficulty: v as difficulty }); setSettingsNewFlag({ ...settings, difficulty: false }) }} />
-                            </div>
-                            <textarea className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500 resize-none h-20" placeholder="Description" value={newFlag.description} onChange={e => setNewFlag({ ...newFlag, description: e.target.value })} />
-                            <div className="grid grid-cols-2 gap-2">
-                                <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Format (Prénom_Nom)" value={newFlag.flag_format} onChange={e => setNewFlag({ ...newFlag, flag_format: e.target.value })} />
-                                <input className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Flag attendu" value={newFlag.flag} onChange={e => setNewFlag({ ...newFlag, flag: e.target.value })} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-2">
-                                <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Indice" value={newFlag.hint} onChange={e => setNewFlag({ ...newFlag, hint: e.target.value })} />
-                                <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Coût hint" type="number" onChange={e => setNewFlag({ ...newFlag, hint_cost: Number(e.target.value) })} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-2">
-                                <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Coins" type="number" onChange={e => setNewFlag({ ...newFlag, coins: Number(e.target.value) })} />
-                                <input className="p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Points" type="number" onChange={e => setNewFlag({ ...newFlag, points: Number(e.target.value) })} />
-                            </div>
-                        </div>
-                        <div className="flex gap-2 pt-1">
-                            <button onClick={() => setSettings(s => ({ ...s, flags: false }))} className="flex-1 bg-red-600 hover:bg-red-500 transition py-1.5 rounded-lg text-sm font-medium">Fermer</button>
-                            <button onClick={addFlag} className="flex-1 bg-green-600 hover:bg-green-500 transition py-1.5 rounded-lg text-sm font-medium">Ajouter</button>
-                        </div>
-                    </div>
-                </div>
+            {displayFlags && (
+                <CreateFlag onClose={() => setDisplayFlags(false)} onSubmit={(flag) => { setFlags(prev => [...prev, flag]); }} />
             )}
         </div>
     );
