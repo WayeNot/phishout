@@ -38,6 +38,17 @@ export type User = {
     is_online: boolean
 }
 
+export type Roles = {
+    id: number;
+    label: string;
+}
+
+export type Permissions = {
+    id: number;
+    name: string;
+    description: string;
+}
+
 export type geoint = {
     id: number;
     title: string;

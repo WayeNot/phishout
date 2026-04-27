@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useNotif } from "./NotifProvider"
-import { User } from "@/lib/types"
-import { IoMdCheckboxOutline } from "react-icons/io"
+import { Permissions, Roles, User } from "@/lib/types"
+import { IoIosArrowDroprightCircle, IoMdCheckboxOutline, IoMdPersonAdd } from "react-icons/io"
 import { MdAlternateEmail, MdCheckBoxOutlineBlank } from "react-icons/md"
 import InputNumber from "./ModalInput"
 import { coinManagement, default_pp, statusColor } from "@/lib/config"
@@ -12,6 +12,7 @@ import { TbCoinRupeeFilled } from "react-icons/tb"
 import { LuCalendar1 } from "react-icons/lu"
 import { useApi } from "@/hooks/useApi"
 import { useNavData } from "@/stores/store"
+import { LiaCriticalRole } from "react-icons/lia"
 
 export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
     const { showNotif } = useNotif()
@@ -19,11 +20,18 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
 
     const { coins, updateCoins } = useNavData()
 
-    const [panelTab, setPanelTab] = useState(0)
+    const [panelTab, setPanelTab] = useState("")
 
     const [users, setUsers] = useState<User[]>([])
     const [editUser, setEditUser] = useState(-1)
+
     const [inMaintenance, setInMaintenance] = useState(false)
+    const [roles, setRoles] = useState<Roles[]>([])
+    const [permissions, setPermissions] = useState<Permissions[]>([])
+
+    const [displayCreation, setDisplayCreation] = useState(0)
+    const [newRole, setNewRole] = useState({ label: "", description: "", allPerms: [] })
+    const [newPermission, setNewPermission] = useState({ label: "", description: "" })
 
     const [showModal, setShowModal] = useState<null | "set" | "reset">(null)
     const [panelUser, setPanelUser] = useState(0)
@@ -43,10 +51,19 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         setInMaintenance(data)
     }
 
+    const getAllRoles = async () => {
+        setRoles(await call("/api/roles/roles"));
+        setPermissions(await call("/api/roles/permissions"));
+    }
+
     useEffect(() => {
-        if (panelTab === 1) {
+        if (panelTab === "Gestion des utilisateurs") {
             getAllUser()
-        } else if (panelTab === 2) {
+        }
+        if (panelTab === "Gestion des rôles") {
+            getAllRoles()
+        }
+        if (panelTab === "Logs & Sécurité") {
             getMaintenance()
         }
     }, [panelTab])
@@ -90,28 +107,33 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
         updateCoins(0)
     }
 
+    const handleCreateRole = () => {
+        if (!newRole || !newRole.label || !newRole.description || newRole.allPerms.length === 0) {
+            showNotif("Veuillez remplir tout les champs !")
+            return
+        }
+
+
+    }
+
+    const panelTabLabel = ["Dashboard", "Gestion des utilisateurs", "Gestion des rôles", "Gestion des CTF", "Gestion des challenges", "Soumission des flags", "ScoreBoard", "Gestion des annonces", "Paramètres", "Logs & Sécurité"]
+
     return (
         <div id="overlay" className="fixed inset-0 z-50 flex items-center justify-center gap-15 bg-black/70 backdrop-blur-sm">
-            <div className="w-9/10 h-3/4 bg-[#1e1e2f] border border-gray-700 rounded-2xl shadow-2xl p-6 animate-fadeIn">
+            <div className="w-fit h-3/4 bg-[#1e1e2f] border border-gray-700 rounded-2xl shadow-2xl p-6 animate-fadeIn">
                 <div className="flex flex-col gap-5 max-h-[50vh] overflow-y-auto pr-2 text-center text-white/70">
                     <h2 className="text-orange-500 italic font-bold">Panel staff - FlagCore</h2>
                 </div>
                 <hr className="my-5 border-gray-600" />
-                <div className="flex justify-between items-center mb-4">
-                    <div className="flex items-center justify-center gap-5">
-                        <button onClick={() => setPanelTab(0)} className={`${panelTab === 0 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Dashboard</button>
-                        <button onClick={() => setPanelTab(1)} className={`${panelTab === 1 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Gestion des utilisateurs</button>
-                        <button onClick={() => setPanelTab(2)} className={`${panelTab === 2 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Gestion des CTF</button>
-                        <button onClick={() => setPanelTab(3)} className={`${panelTab === 3 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Gestion des challenges</button>
-                        <button onClick={() => setPanelTab(4)} className={`${panelTab === 4 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Soumission des flags</button>
-                        <button onClick={() => setPanelTab(5)} className={`${panelTab === 5 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>ScoreBoard</button>
-                        <button onClick={() => setPanelTab(6)} className={`${panelTab === 6 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Gestion des annonces</button>
-                        <button onClick={() => setPanelTab(7)} className={`${panelTab === 7 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Paramètres</button>
-                        <button onClick={() => { getMaintenance(); setPanelTab(8) }} className={`${panelTab === 8 ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>Logs & Sécurité</button>
+                <div className="flex justify-between items-center mb-4 gap-3">
+                    <div className="flex items-center justify-center gap-3">
+                        {panelTabLabel.map((v, k) => (
+                            <button key={k} onClick={() => setPanelTab(v)} className={`${panelTab === v ? "text-orange-400" : "text-white/40"} rounded-md px-3 py-1 hover:text-white/60 cursor-pointer transition duration-500 bg-[#2a2a3d]`}>{v}</button>
+                        ))}
                     </div>
                     <button onClick={closePanel} className="text-gray-400 hover:text-white cursor-pointer transition duration-500">✕</button>
                 </div>
-                {panelTab === 1 && (
+                {panelTab === "Gestion des utilisateurs" && (
                     <div className="w-full">
                         <div className="flex items-center gap-3 w-full">
                             {Array.isArray(users) && users.map((el) => (
@@ -122,7 +144,7 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                         </div>
                     </div>
                 )}
-                {panelTab === 8 && (
+                {panelTab === "Logs & Sécurité" && (
                     <div>
                         {inMaintenance ? (
                             <button onClick={() => setMaintenance()} className="flex items-center gap-3 text-white/40 p-4 border border-gray-600 rounded-[7px] hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center"><IoMdCheckboxOutline />Terminer la maintenance</button>
@@ -176,6 +198,104 @@ export default function AdminPanel({ closePanel }: { closePanel: () => void }) {
                                     </div>
                                 </div>
                             )}
+                        </div>
+                    </div>
+                )}
+                {panelTab === "Gestion des rôles" && (
+                    <div className="flex flex-col gap-5 mt-5">
+                        <div className="flex items-center gap-3">
+                            <button onClick={() => setDisplayCreation(1)} className="border border-gray-600 text-white/40 rounded-[7px] w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Créer un rôle</button>
+                            <button className="border border-gray-600 text-white/40 rounded-[7px] w-fit p-3 hover:text-[#1e1e2f] hover:bg-white/40 transition duration-500 cursor-pointer text-center">Créer une permission</button>
+                        </div>
+                        <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30"><span className="h-px w-6 bg-white/20" />Rôles ↓<span className="h-px flex-1 bg-white/10" /></div>
+                        <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30"><span className="h-px w-6 bg-white/20" />Permissions ↓<span className="h-px flex-1 bg-white/10" /></div>
+                    </div>
+                )}
+                {displayCreation === 1 && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl animate-fadeIn">
+                        <div className="flex w-full max-w-6xl gap-4">
+                            <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl text-white flex flex-col shadow-2xl overflow-hidden">
+                                <div className="relative flex flex-col items-center text-center px-8 py-9 w-full">
+                                    <div className="flex items-center justify-center w-16 h-16 rounded-3xl bg-linear-to-br from-yellow-400/20 to-yellow-500/10 border border-yellow-400/20 text-yellow-400 text-2xl shadow-inner mb-6"><LiaCriticalRole /></div>
+                                    <div className="flex items-center flex-col gap-2">
+                                        <h2 className="text-2xl font-semibold tracking-tight text-white">Création d'un rôle</h2>
+                                        <p className="text-sm text-gray-400 leading-relaxed max-w-65">Créer n'importe quel rôle grâce à notre configurateur !</p>
+                                    </div>
+                                    <div className="w-2/3 flex flex-col gap-2 mt-5">
+                                        <div className="flex flex-col items-center gap-3">
+                                            <input className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Intitulé du rôle" value={newRole.label} onChange={e => setNewRole(prev => ({ ...prev, label: e.target.value }))} />
+                                            <textarea className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500 resize-none h-20" placeholder="Description du rôle" value={newRole.description} onChange={e => setNewRole(prev => ({ ...prev, description: e.target.value }))} />
+                                        </div>
+                                        <div className="flex w-full gap-3 mt-3">
+                                            <button onClick={() => setDisplayCreation(0)} className="flex-1 py-2.5 rounded-xl border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition duration-500 cursor-pointer active:scale-95">Annuler</button>
+                                            <button onClick={handleCreateRole} className="flex-1 py-2.5 rounded-xl bg-linear-to-r from-yellow-400 to-yellow-500 text-black font-semibold shadow-[0_15px_35px_rgba(250,204,21,0.4)] hover:brightness-110 transition duration-500 cursor-pointer active:scale-95 flex items-center justify-center gap-3 hover:text-black/70">Créer<IoIosArrowDroprightCircle /></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl text-white flex flex-col shadow-2xl overflow-hidden">
+                                <div className="relative flex flex-col items-center text-center px-8 py-9 w-full">
+                                    <div className="flex items-center justify-center w-16 h-16 rounded-3xl bg-linear-to-br from-yellow-400/20 to-yellow-500/10 border border-yellow-400/20 text-yellow-400 text-2xl shadow-inner mb-6"><IoMdPersonAdd /></div>
+                                    <div className="flex items-center flex-col gap-2">
+                                        <h2 className="text-2xl font-semibold tracking-tight text-white">Gestion des permissions</h2>
+                                        <p className="text-sm text-gray-400 leading-relaxed max-w-65">Ajouter toutes les permissions dont vous avez besoin !</p>
+                                    </div>
+                                    <div className="w-2/3 flex flex-col gap-2 mt-5">
+                                        {permissions.length === 0 && (
+                                            <div>
+                                                <button className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none">Aucune permission pour le moment !</button>
+                                            </div>
+                                        )}
+                                        {permissions.map((v, k) => (
+                                            <button key={k}>v</button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {displayCreation === 2 && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl animate-fadeIn">
+                        <div className="flex w-full max-w-6xl gap-4">
+                            <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl text-white flex flex-col shadow-2xl overflow-hidden">
+                                <div className="relative flex flex-col items-center text-center px-8 py-9 w-full">
+                                    <div className="flex items-center justify-center w-16 h-16 rounded-3xl bg-linear-to-br from-yellow-400/20 to-yellow-500/10 border border-yellow-400/20 text-yellow-400 text-2xl shadow-inner mb-6"><LiaCriticalRole /></div>
+                                    <div className="flex items-center flex-col gap-2">
+                                        <h2 className="text-2xl font-semibold tracking-tight text-white">Création d'une permission</h2>
+                                        <p className="text-sm text-gray-400 leading-relaxed max-w-65">Créer n'importe quelle permission grâce à notre configurateur !</p>
+                                    </div>
+                                    <div className="w-2/3 flex flex-col gap-2 mt-5">
+                                        <div className="flex flex-col items-center gap-3">
+                                            <input className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500" placeholder="Intitulé du rôle" value={newRole.label} onChange={e => setNewRole(prev => ({ ...prev, label: e.target.value }))} />
+                                            <textarea className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none focus:ring-1 focus:ring-orange-500 resize-none h-20" placeholder="Description du rôle" value={newRole.description} onChange={e => setNewRole(prev => ({ ...prev, description: e.target.value }))} />
+                                        </div>
+                                        <div className="flex w-full gap-3 mt-3">
+                                            <button onClick={() => setDisplayCreation(0)} className="flex-1 py-2.5 rounded-xl border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition duration-500 cursor-pointer active:scale-95">Annuler</button>
+                                            <button onClick={handleCreateRole} className="flex-1 py-2.5 rounded-xl bg-linear-to-r from-yellow-400 to-yellow-500 text-black font-semibold shadow-[0_15px_35px_rgba(250,204,21,0.4)] hover:brightness-110 transition duration-500 cursor-pointer active:scale-95 flex items-center justify-center gap-3 hover:text-black/70">Créer<IoIosArrowDroprightCircle /></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl text-white flex flex-col shadow-2xl overflow-hidden">
+                                <div className="relative flex flex-col items-center text-center px-8 py-9 w-full">
+                                    <div className="flex items-center justify-center w-16 h-16 rounded-3xl bg-linear-to-br from-yellow-400/20 to-yellow-500/10 border border-yellow-400/20 text-yellow-400 text-2xl shadow-inner mb-6"><IoMdPersonAdd /></div>
+                                    <div className="flex items-center flex-col gap-2">
+                                        <h2 className="text-2xl font-semibold tracking-tight text-white">Gestion des permissions</h2>
+                                        <p className="text-sm text-gray-400 leading-relaxed max-w-65">Ajouter toutes les permissions dont vous avez besoin !</p>
+                                    </div>
+                                    <div className="w-2/3 flex flex-col gap-2 mt-5">
+                                        {permissions.length === 0 && (
+                                            <div>
+                                                <button className="w-full p-2 bg-[#2a2a3d] rounded-lg text-sm outline-none">Aucune permission pour le moment !</button>
+                                            </div>
+                                        )}
+                                        {permissions.map((v, k) => (
+                                            <button key={k}>v</button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}
