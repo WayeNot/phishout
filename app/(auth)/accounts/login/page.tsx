@@ -5,15 +5,15 @@ import { BsArrowRight } from "react-icons/bs";
 import { MdAccountBox } from "react-icons/md";
 import { useRouter } from 'next/navigation'
 import { useNotif } from "@/components/NotifProvider"
+import { FaHatCowboy } from "react-icons/fa";
 
 export default function Home() {
     const { showNotif } = useNotif()
     const [credentials, setCredentials] = useState({ username: "", password: "" })
     const router = useRouter();
 
-    const handleLogin = async (e: any) => {
-        e.preventDefault();
-        const res = await fetch("/api/auth/account/login", {
+    const handleLogin = async () => {
+        const res = await fetch("/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username: credentials.username, password: credentials.password })
@@ -21,31 +21,43 @@ export default function Home() {
 
         if (!res.ok) {
             const err = await res.json()
-            showNotif(err.error, "error")           
+            showNotif(err.error, "error")
             return
         }
-
-        router.push("/")
+        router.refresh()
+        router.push("/home")
     }
 
     const handleRedirect = () => {
+        router.refresh()
         router.push("/accounts/register")
     }
 
+    const handleGuest = async () => {
+        const req = await fetch("/api/auth/guest", {
+            method: "POST"
+        })
+        if (!req.ok) {
+            showNotif(await req.text())
+            return
+        }
+        router.refresh()
+        router.push("/home")
+    }
+
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
             <div className="w-full max-w-md bg-[#1e1e2f] border border-gray-700 rounded-2xl shadow-2xl p-6 animate-fadeIn">
-                <div>
-                    <h2 className="text-xl font-bold text-white text-center w-full mb-4">Connexion</h2>
-                    <hr className="text-white w-4/5 my-5 m-auto" />
-                    <div className="flex flex-col items-center w-full gap-4">
-                        <div className="flex flex-col items-center justify-center gap-1 w-full">
-                            <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="border-2 border-white/40 rounded-[8px] w-4/5 text-white/80 p-[6px]" placeholder="Nom d'utilisateur" type="text" />
-                            <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="border-2 border-white/40 rounded-[8px] w-4/5 text-white/80 p-[6px]" placeholder="Mot de passe" type="password" />
-                        </div>
-                        <button onClick={(e) => handleLogin(e)} className="cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 rounded-[8px] w-4/5 p-[8px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Suivant<BsArrowRight /></button>
-                        <p onClick={() => handleRedirect()} className="flex items-center gap-3 text-white/30 hover:underline transition duration-500 cursor-pointer hover:text-white"><MdAccountBox />Créer un compte</p>
+                <h2 className="text-xl font-bold text-white text-center w-full mb-4">Connexion</h2>
+                <hr className="text-white w-4/5 my-5 m-auto" />
+                <div className="flex flex-col items-center w-full gap-4">
+                    <div className="flex flex-col items-center justify-center gap-1 w-full">
+                        <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="border-2 border-white/40 rounded-lg w-4/5 text-white/80 p-1.5" placeholder="Nom d'utilisateur" type="text" />
+                        <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="border-2 border-white/40 rounded-lg w-4/5 text-white/80 p-1.5" placeholder="Mot de passe" type="password" />
                     </div>
+                    <button onClick={() => handleLogin()} className="cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 rounded-lg w-4/5 p-2 hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Suivant<BsArrowRight /></button>
+                    <p onClick={() => handleRedirect()} className="flex items-center gap-3 text-white/30 hover:underline transition duration-500 cursor-pointer hover:text-white"><MdAccountBox />Créer un compte</p>
+                    <p onClick={() => handleGuest()} className="flex items-center gap-3 text-white/30 hover:underline transition duration-500 cursor-pointer hover:text-white"><FaHatCowboy />Continuer en tant qu'invité</p>
                 </div>
             </div>
         </div>
