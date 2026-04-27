@@ -34,7 +34,11 @@ export async function proxy(request: NextRequest) {
         if (!isPublicRoute && !isAllowedRole) return NextResponse.redirect(new URL(maintenance_route, request.url));
     }
 
-    if (!session_id && !isGuest && !path.startsWith("/accounts") && !isPublicRoute) return NextResponse.redirect(new URL("/accounts/login", request.url));
+    if (!session_id && !isGuest && !path.startsWith("/accounts") && !isPublicRoute) {
+        console.log("AHAH");
+        
+        return NextResponse.redirect(new URL("/accounts/login", request.url));
+    } 
 
     return NextResponse.next()
 }

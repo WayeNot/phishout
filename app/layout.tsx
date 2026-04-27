@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         const getSession = async () => {
             try {
                 const res = await fetch("/api/auth/session")
-                if (!res.ok) {
+                if (!res.ok && !pathname.startsWith("/accounts")) {
                     router.refresh()
                     router.push("/accounts/login")
                     return
