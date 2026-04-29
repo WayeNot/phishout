@@ -7,6 +7,8 @@ import { MdAccountBox } from "react-icons/md";
 import { useRouter } from 'next/navigation'
 import { useNotif } from "@/components/NotifProvider";
 import { default_pp } from "@/lib/config";
+import Typewriter from 'typewriter-effect';
+
 
 export default function Home() {
     const { showNotif } = useNotif()
@@ -41,23 +43,35 @@ export default function Home() {
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
-            <div className="w-full max-w-md bg-black/ border border-white/70 shadow-2xl p-6 animate-fadeIn">
-                <div>
-                    <h2 className="text-[35px] font-bold text-white/70 text-center font-mono w-full mb-4">Register</h2>
-                    <hr className="text-white w-4/5 my-5 m-auto" />
-                    <div className="flex flex-col items-center w-full gap-4">
-                        <div className="flex flex-col items-center justify-center gap-1 w-full">
-                            <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5" placeholder="Username" type="text" />
-                            <input value={credentials.mail} onChange={(e) => setCredentials({ ...credentials, mail: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5 mt-1" placeholder="Email address" type="email" />
-                            <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5  mt-1" placeholder="Password" type="password" />
-                            <input value={credentials.pp_url} onChange={(e) => setCredentials({ ...credentials, pp_url: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5 mt-1" type="text" placeholder="URL of your logo" />
-                            <div className="flex flex-col items-center gap-3 w-4/5">
-                                <img className="w-25 rounded-[25%] bg-center bg-cover bg-no-repeat mt-5 mb-5" src={credentials.pp_url || default_pp} alt="Logo de l'utilisateur" />
+        <div>
+            <div className="lg:hidden fixed inset-0 bg-[#1e1e2f] font-mono z-50 flex items-center justify-center">
+                <h2 className="text-white text-xl text-center">
+                    The mobile version is coming soon.
+                </h2>
+            </div>
+
+            <div className="hidden lg:block">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+                    <div className="w-full max-w-md bg-black/ border border-white/70 shadow-2xl p-6 animate-fadeIn">
+                        <div>
+                            <div className="text-[35px] font-bold text-white/70 text-center font-mono w-full mb-4">
+                                <Typewriter onInit={(tw) => tw.typeString('Register').stop().start()} />
+                            </div>
+                            <hr className="text-white w-4/5 my-5 m-auto" />
+                            <div className="flex flex-col items-center w-full gap-4">
+                                <div className="flex flex-col items-center justify-center gap-1 w-full">
+                                    <input value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5" placeholder="Username" type="text" />
+                                    <input value={credentials.mail} onChange={(e) => setCredentials({ ...credentials, mail: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5 mt-1" placeholder="Email address" type="email" />
+                                    <input value={credentials.password} onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5  mt-1" placeholder="Password" type="password" />
+                                    <input value={credentials.pp_url} onChange={(e) => setCredentials({ ...credentials, pp_url: e.target.value })} className="border-2 font-mono text-[20px] border-white/40 w-4/5 text-white/80 p-1.5 mt-1" type="text" placeholder="URL of your logo" />
+                                    <div className="flex flex-col items-center gap-3 w-4/5">
+                                        <img className="w-25 rounded-[25%] bg-center bg-cover bg-no-repeat mt-5 mb-5" src={credentials.pp_url || default_pp} alt="Logo de l'utilisateur" />
+                                    </div>
+                                </div>
+                                <button onClick={() => handleRegister()} className="cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 w-4/5 p-2 font-mono text-[20px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Enter<BsArrowRight /></button>
+                                <p onClick={() => handleRedirect()} className="flex items-center gap-3 text-white/30 hover:underline font-mono text-[17px] transition duration-500 cursor-pointer hover:text-white pt-5"><MdAccountBox />Login</p>
                             </div>
                         </div>
-                        <button onClick={() => handleRegister()} className="cursor-pointer flex items-center justify-center gap-3 border-2 border-white/40 text-white/40 w-4/5 p-2 font-mono text-[20px] hover:bg-white/40 hover:border-white/40 hover:text-white transition duration-500">Enter<BsArrowRight /></button>
-                        <p onClick={() => handleRedirect()} className="flex items-center gap-3 text-white/30 hover:underline font-mono text-[17px] transition duration-500 cursor-pointer hover:text-white pt-5"><MdAccountBox />Login</p>
                     </div>
                 </div>
             </div>

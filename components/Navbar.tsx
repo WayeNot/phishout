@@ -14,6 +14,8 @@ import { GiMusicSpell } from "react-icons/gi"
 import { useApi } from "@/hooks/useApi"
 import { FaFire } from "react-icons/fa"
 import { SiOpslevel } from "react-icons/si"
+import { RiCoinsFill } from "react-icons/ri";
+
 
 export default function Navbar() {
     const { call } = useApi()
@@ -37,7 +39,7 @@ export default function Navbar() {
             )}
             <nav className="flex items-center justify-between p-4 sm:mx-5">
                 <div className="flex items-center gap-5 text-white/40">
-                    <h1 className="text-xl h-fit sm:text-2xl text-white/60 font-mono">FlagCore</h1>
+                    <a href="/home" className="text-xl h-fit sm:text-2xl text-white/60 font-mono">FlagCore</a>
                     {role.some(r => staff_role.includes(r)) && (
                         <div className="flex items-center gap-3">
                             <MdAdminPanelSettings onClick={() => setShowAdminPanel(true)} className="text-red-500 font-bold text-[22px] hover:text-red-800 transition duration-500 cursor-pointer" />
@@ -47,16 +49,17 @@ export default function Navbar() {
                 </div>
                 <div className="flex items-center">
                     <div className="flex items-center gap-5 font-bold italic text-white/40">
-                        <Link href={`/user/${user_id}`} className="flex items-center gap-3 hover:text-white/70 transition duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-16 rounded-[25%] bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} />
+                        <Link href={`/user/${user_id}`} className="flex items-center gap-3 hover:text-white/70 transition duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-10 bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} />
                             <span className="mx-2">-</span>
                             {username}
                         </Link>
                     </div>
-                    <p className="text-white/40 text-[20px] mx-5"> | </p>
-                    <div className="flex items-center">
-                        <p className="flex items-center gap-3 text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600"><TbCoinRupeeFilled />{coins}</p>
+
+                    <h2 className="text-white/40 font-mono text-[20px] border-b-1 ml-25">Your score : </h2>
+                    <div className="flex items-center border-2 border-white/40 pt-1 pb-1 pl-3 pr-3 ml-5">
+                        <p className="flex items-center gap-3 text-white/40 text-[18px] transition duration-500 hover:text-yellow-600"><RiCoinsFill />{coins}</p>
                         <p className="text-white/40 text-[20px] mx-5"> | </p>
-                        <p className="flex items-center gap-3 text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600"><SiOpslevel />{points}</p>
+                        <p className="flex items-center gap-3 text-white/40 text-[18px] transition duration-500 hover:text-yellow-600"><SiOpslevel />{points}</p>
                     </div>
                 </div>
 
