@@ -63,10 +63,10 @@ export default function Navbar() {
                 <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
 
                 <div className="hidden sm:flex items-center gap-5 text-white/40">
-                    <Link href="/home" className="hover:text-white/70 transition duration-500">Accueil</Link>
-                    <Link href="/tools" className="hover:text-white/70 transition duration-500">Tools</Link>
-                    <Link href="/challenges" className="hover:text-white/70 transition duration-500">Nos challenges</Link>
-                    <MdExitToApp onClick={handleLogout} className="hover:text-red-400 cursor-pointer text-xl transition duration-500" />
+                    <Link href="/home" className="hover:text-white/70 hover:text-underline hover:border-t-2 hover:border-b-2 pt-1 pb-1 transition duration-500 font-mono text-[20px]">Accueil</Link>
+                    <Link href="/tools" className="hover:text-white/70 hover:border-t-2 hover:border-b-2 pt-1 pb-1 transition duration-500 font-mono ml-5 text-[20px]">Tools</Link>
+                    <Link href="/challenges" className="hover:text-white/70 hover:border-t-2 hover:border-b-2 pt-1 pb-1 transition duration-500 font-mono ml-5 mr-5 text-[20px]">Nos challenges</Link>
+                    <MdExitToApp onClick={handleLogout} className="hover:text-red-400 cursor-pointer text-2xl transition duration-500" />
                 </div>
             </nav>
 
