@@ -6,6 +6,8 @@ import { MdAccountBox } from "react-icons/md";
 import { useRouter } from 'next/navigation'
 import { useNotif } from "@/components/NotifProvider"
 import { FaHatCowboy } from "react-icons/fa";
+import Typewriter from 'typewriter-effect';
+
 
 export default function Home() {
     const { showNotif } = useNotif()
@@ -48,7 +50,9 @@ export default function Home() {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
             <div className="w-full max-w-md bg-black/ border border-white/70 shadow-2xl p-6 animate-fadeIn">
-                <h2 className="text-[35px] font-bold text-white/70 text-center font-mono w-full mb-4">Login</h2>
+                <div className="text-[35px] font-bold text-white/70 text-center font-mono w-full mb-4">
+                    <Typewriter onInit={(tw) => tw.typeString('Login').stop().start()} />
+                </div>
                 <hr className="text-white/70 w-4/5 my-5 m-auto" />
                 <div className="flex flex-col items-center w-full gap-4">
                     <div className="flex flex-col items-center justify-center gap-1 w-full">

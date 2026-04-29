@@ -5,6 +5,7 @@ import { useState } from "react"
 import { BsArrowRight } from "react-icons/bs"
 import { useApi } from "@/hooks/useApi"
 import { RxCross2 } from "react-icons/rx";
+import Typewriter from 'typewriter-effect';
 
 export default function NavbarNotConnected() {
 
