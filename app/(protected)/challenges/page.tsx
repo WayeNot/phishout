@@ -25,6 +25,7 @@ export default function Home() {
     const [tab, setTab] = useState<0 | 1>(0);
     const [ctf, setCtf] = useState<ctf[]>([]);
     const [geoint, setGeoint] = useState<geoint[]>([]);
+    const [openCtf, setOpenCtf] = useState(false);
     const [openGeo, setOpenGeo] = useState(false);
 
     useEffect(() => {
@@ -72,7 +73,7 @@ export default function Home() {
 
                 {tab === 0 && (
                     <div className="px-6 space-y-10">
-                        <CreateButtons type="ctf" role={role[0]} onGeoOpen={() => setOpenGeo(false)}/>
+                        <CreateButtons type="ctf" role={role[0]} onCtfOpen={() => setOpenCtf(true)}/>
                         <ChallengeGroups data={groupedCtf} open={open} type="ctf"/>
                     </div>
                 )}
@@ -100,7 +101,7 @@ export default function Home() {
                         )}
                     </div>
                 )}
-                <CtfBuilder />
+                {openCtf && <CtfBuilder onClose={() => setOpenCtf(false)} />}
                 {openGeo && <GeointBuilder onClose={() => setOpenGeo(false)} />}
             </div>
         </div>

@@ -26,18 +26,12 @@ export async function proxy(request: NextRequest) {
     }
 
     const isPublicRoute = public_routes.some(route => path.startsWith(route));
-
-    console.log("Guest : ", isGuest);
     
     if (!session_id && !isGuest && !isPublicRoute) return NextResponse.redirect(new URL("/accounts/login", request.url));
 
     if (isGuest && noGuestRoute.some(route => path.startsWith(route))) return NextResponse.redirect(new URL("/challenges", request.url));
 
-    const response = NextResponse.next();
-
-    // if (path.startsWith("/accounts")) response.cookies.delete("isGuest");
-
-    return response;
+    return NextResponse.next();
 }
 
 export const config = {

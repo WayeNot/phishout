@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
     try {
         const form = await req.formData();
-        const files = form.getAll("files") as File[];
+        const files = form.getAll("files[]") as File[];
 
         const uploadedFiles = await Promise.all(
             files

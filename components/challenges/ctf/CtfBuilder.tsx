@@ -5,27 +5,36 @@ import { useState } from "react";
 
 import DropDown from "@/components/ui/DropDown";
 import { categoryBtn, difficultyBtn, NewCtfFlag, difficulty, category, CtfBuilderState, ctf } from "@/lib/types";
-import { useCtfBuilderStore } from "@/stores/useCtfBuilderStore";
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineDescription } from "react-icons/md";
 import { useNotif } from "@/components/NotifProvider";
 import CreateFlag from "../CreateFlag";
+import InsertFile from "../InsertFile";
 
-export default function CtfBuilder({ onClose }: any) {
+export default function CtfBuilder({ onClose } : any) {
     const { showNotif } = useNotif()
 
-    const [builder, setBuilder] = useState<CtfBuilderState>({ title: "", description: "", difficulty: "", category: [],  flag_format: "", coins: undefined, points: undefined, files: [] });
+    const [builder, setBuilder] = useState<CtfBuilderState>({ title: "", description: "", difficulty: "", category: [], flag_format: "", coins: undefined, points: undefined, files: [] });
+    const [flags, setFlags] = useState<NewCtfFlag[]>([])
+    const [files, setFiles] = useState<File[]>([]);
 
-    const { isOpen, setOpen, flags, setFlags, selectedFiles, setSelectedFiles, resetBuilder } = useCtfBuilderStore();
     const [settings, setSettings] = useState({ difficulty: false, category: false });
 
     const [displayFiles, setDisplayFiles] = useState(false)
     const [displayFlags, setDisplayFlags] = useState(false)
 
-    if (!isOpen) return null;
+    const resetBuilder = () => {
+        setBuilder({ title: "", description: "", difficulty: "", category: [], flag_format: "", coins: undefined, points: undefined, files: [] })
+        setFlags([])
+        setFiles([])
+        setSettings({ difficulty: false, category: false })
+        setDisplayFiles(false)
+        setDisplayFlags(false)
+        onClose();
+    }
 
     const removeFile = (index: number) => {
-        setSelectedFiles(selectedFiles.filter((_, i) => i !== index));
+        setFiles(files.filter((_, i) => i !== index));
     };
 
     const removeFlag = (index: number) => {
@@ -34,7 +43,7 @@ export default function CtfBuilder({ onClose }: any) {
 
     const handleCreate = async () => {
         const formData = new FormData();
-        selectedFiles.forEach(f => formData.append("files", f));
+        files.forEach(f => formData.append("files[]", f));
 
         const res = await fetch("/api/challenges/uploadFiles", {
             method: "POST",
@@ -47,15 +56,14 @@ export default function CtfBuilder({ onClose }: any) {
             return
         }
 
-        const files = await res.json();
+        const data = await res.json();
 
         await fetch("/api/challenges?type=ctf", {
             method: "POST",
-            body: JSON.stringify({ challenge: builder, flags: flags, files: files.files })
+            body: JSON.stringify({ challenge: builder, flags: flags, files: data.files })
         })
 
         resetBuilder();
-        setOpen(false);
     };
 
     const canCreate = builder.title && builder.description && builder.difficulty && builder.category.length && builder.flag_format;
@@ -66,7 +74,7 @@ export default function CtfBuilder({ onClose }: any) {
                 <div className="w-1/2 bg-[#151522] border border-white/10 rounded-2xl text-white flex flex-col shadow-2xl overflow-hidden">
                     <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#161625]">
                         <h1 className="text-sm font-bold tracking-wide">CTF Builder</h1>
-                        <button onClick={() => { resetBuilder(); setOpen(false); }} className="text-white/40 hover:text-white transition duration-500 cursor-pointer"><IoMdClose size={18} /></button>
+                        <button onClick={() => resetBuilder()} className="text-white/40 hover:text-white transition duration-500 cursor-pointer"><IoMdClose size={18} /></button>
                     </div>
                     <div className="p-4 space-y-4 overflow-y-auto max-h-[75vh]">
                         <div className="bg-[#1b1b2a] border border-white/5 rounded-xl p-3 space-y-2">
@@ -102,7 +110,7 @@ export default function CtfBuilder({ onClose }: any) {
                     <div className="p-3 border-t border-white/10 bg-[#161625] grid grid-cols-2 gap-2">
                         <button onClick={() => setDisplayFiles(true)} className="bg-[#232336] hover:bg-[#2a2a3d] text-xs py-2 rounded-lg transition duration-500 cursor-pointer">📁 Fichiers</button>
                         <button onClick={() => setDisplayFlags(true)} className="bg-[#232336] hover:bg-[#2a2a3d] text-xs py-2 rounded-lg transition duration-500 cursor-pointer">🚩 Flags</button>
-                        <button onClick={() => { resetBuilder(); setOpen(false); }} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 rounded-lg transition duration-500 cursor-pointer">Annuler</button>
+                        <button onClick={() => resetBuilder() } className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 rounded-lg transition duration-500 cursor-pointer">Annuler</button>
                         <button disabled={!canCreate} onClick={handleCreate} className="bg-green-500/10 hover:bg-green-500/20 text-green-300 text-xs py-2 rounded-lg transition duration-500 disabled:opacity-40 cursor-pointer">Créer</button>
                     </div>
                 </div>
@@ -146,8 +154,8 @@ export default function CtfBuilder({ onClose }: any) {
                     <div className="space-y-2">
                         <div className="flex items-center gap-2 text-white/70 font-semibold">📁 <span>Fichiers</span></div>
                         <div className="max-h-32 overflow-y-auto space-y-2 pr-1">
-                            {!Array.isArray(selectedFiles) || selectedFiles.length === 0 ? <p className="text-white/30 text-sm">Aucun fichier</p> : (
-                                selectedFiles.map((f, i) => (
+                            {!Array.isArray(files) || files.length === 0 ? <p className="text-white/30 text-sm">Aucun fichier</p> : (
+                                files.map((f, i) => (
                                     <div key={i} className="flex items-center justify-between bg-[#1a1a28] p-2 rounded-lg text-sm border border-white/5 hover:border-white/20 transition duration-500">
                                         <span className="truncate text-white/70">📄 {f.name}</span>
                                         <button onClick={() => removeFile(i)} className="text-red-400 hover:text-red-300 transition duration-500 cursor-pointer">✕</button>
@@ -175,43 +183,8 @@ export default function CtfBuilder({ onClose }: any) {
                     </div>
                 </div>
             </div>
-            {displayFiles && (
-                <div className="fixed inset-0 bg-black/80 flex items-center justify-center">
-                    <div className="bg-[#12121c] w-140 rounded-2xl p-5 text-white shadow-2xl border border-white/10 space-y-4">
-                        <div className="text-center">
-                            <h2 className="text-lg font-bold">Fichiers du challenge</h2>
-                            <p className="text-white/40 text-xs">Glisser-déposer ou sélectionner des fichiers</p>
-                        </div>
-                        <div className="border border-dashed border-white/20 rounded-xl p-6 cursor-pointer hover:border-orange-500 transition duration-500 flex flex-col items-center justify-center gap-2" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); const files = Array.from(e.dataTransfer.files || []); setSelectedFiles(prev => [...prev, ...files]); }} onClick={() => document.getElementById("fileInput")?.click()}>
-                            <input id="fileInput" type="file" multiple className="hidden" onChange={(e) => { const files = e.target.files; if (!files) return; setSelectedFiles(prev => [...prev, ...Array.from(files)]); }} />
-                            <div className="text-3xl">📁</div>
-                            <div className="text-sm text-white/50 text-center">Clique ou dépose tes fichiers ici</div>
-                        </div>
-                        <div className="max-h-44 overflow-y-auto space-y-2 pr-1">
-                            {selectedFiles.length === 0 && <div className="text-center text-white/30 text-sm">Aucun fichier</div>}
-                            {selectedFiles.map((f, i) => (
-                                <div key={i} className="flex items-center justify-between bg-[#1a1a28] p-2 rounded-lg text-sm hover:bg-[#232336] transition duration-500">
-                                    <div className="truncate max-w-[70%] flex items-center gap-2">📄 {f.name}</div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="text-white/40 text-xs">{(f.size / 1024).toFixed(1)} KB</div>
-                                        <button onClick={() => setSelectedFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-red-400 hover:text-red-300 cursor-pointer transition duration-500">✕</button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="flex gap-2">
-                            <button onClick={() => setSettings(s => ({ ...s, files: false }))} className="w-1/2 bg-white/10 hover:bg-white/20 cursor-pointer transition duration-500 py-2 rounded-xl text-sm">Annuler</button>
-                            <button onClick={() => setSettings(s => ({ ...s, files: false }))} className="w-1/2 bg-green-600 hover:bg-green-500 cursor-pointer transition duration-500 py-2 rounded-xl text-sm font-medium">Valider</button>
-                        </div>
-                    </div>
-                </div>
-            )}
-            {/* {displayFiles && (
-                
-            )} */}
-            {displayFlags && (
-                <CreateFlag onClose={() => setDisplayFlags(false)} onSubmit={(flag) => { setFlags(prev => [...prev, flag]); }} />
-            )}
+            {displayFiles && <InsertFile onClose={() => setDisplayFiles(false)} onSubmit={(files) => setFiles(prev => [...prev, ...files])} />}
+            {displayFlags && <CreateFlag onClose={() => setDisplayFlags(false)} onSubmit={(flag) => setFlags(prev => [...prev, flag])} />}
         </div>
     );
 }

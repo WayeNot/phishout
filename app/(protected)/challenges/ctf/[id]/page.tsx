@@ -128,7 +128,7 @@ export default function Page() {
                         <p className="text-center w-full sm:w-2/3 lg:w-1/2 text-white/40 text-sm sm:text-base leading-relaxed">{ctf?.description}</p>
                         <div className='flex items-center gap-2'>
                             {ctf?.files?.map((v, k) => (
-                                <Link key={k} href={v} className="border-2 px-4 py-2 rounded-lg text-white/60 hover:bg-white hover:text-black hover:border-white transition duration-500 text-sm sm:text-base">Ressource de départ</Link>
+                                <Link key={k} href={v} target="_blank" className="border-2 px-4 py-2 rounded-lg text-white/60 hover:bg-white hover:text-black hover:border-white transition duration-500 text-sm sm:text-base">Ressource de départ</Link>
                             ))}
                         </div>
 
