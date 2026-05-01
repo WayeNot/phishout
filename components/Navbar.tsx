@@ -30,7 +30,7 @@ export default function Navbar() {
         await call("/api/auth/logout", { method: "POST" })
         updateIsGuest(false)
         router.refresh()
-        router.push("/")
+        router.push("/accounts/login")
     }
 
     return (
@@ -40,7 +40,7 @@ export default function Navbar() {
             )}
             <nav className="flex items-center justify-between p-4 sm:mx-5">
                 <div className="flex items-center gap-5 text-white/40">
-                    <a href="/home" className="text-xl h-fit sm:text-2xl text-white/60 font-mono">FlagCore</a>
+                    <a href="/home" className="text-xl h-fit sm:text-2xl text-white/60 font-mono hover:text-white/90 transition duration-500">FlagCore</a>
                     {role.some(r => staff_role.includes(r)) && (
                         <div className="flex items-center gap-3">
                             <MdAdminPanelSettings onClick={() => setShowAdminPanel(true)} className="text-red-500 font-bold text-[22px] hover:text-red-800 transition duration-500 cursor-pointer" />
@@ -51,10 +51,7 @@ export default function Navbar() {
                 {!isGuest && (
                     <div className="flex items-center">
                         <div className="flex items-center gap-5 font-bold italic text-white/40">
-                            <Link href={`/user/${user_id}`} className="flex items-center gap-3 hover:text-white/70 transition duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-10 bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} />
-                                <span className="mx-2">-</span>
-                                {username}
-                            </Link>
+                            <Link href={`/user/${user_id}`} className="flex items-center gap-3 hover:text-white/70 transition duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-10 bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} /><span className="mx-2">-</span>{username}</Link>
                         </div>
 
                         <h2 className="text-white/40 font-mono text-[20px] border-b ml-25">Your score : </h2>
@@ -69,9 +66,9 @@ export default function Navbar() {
                 <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
 
                 <div className="hidden sm:flex items-center gap-5 text-white/40">
-                    <Link href="/home" className="hover:text-white/70 hover:text-underline hover:border-t-2 hover:border-b-2 pt-1 pb-1 transition duration-500 font-mono text-[20px]">Accueil</Link>
-                    <Link href="/tools" className="hover:text-white/70 hover:border-t-2 hover:border-b-2 pt-1 pb-1 transition duration-500 font-mono ml-5 text-[20px]">Tools</Link>
-                    <Link href="/challenges" className="hover:text-white/70 hover:border-t-2 hover:border-b-2 pt-1 pb-1 transition duration-500 font-mono ml-5 mr-5 text-[20px]">Nos challenges</Link>
+                    <Link href="/home" className="hover:text-white/70 hover:text-underline border-2 border-[#212529] hover:border-t-2 hover:border-b-2 hover:border-t-white hover:border-b-white pt-1 pb-1 transition duration-500 font-mono text-[20px]">Accueil</Link>
+                    <Link href="/tools" className="hover:text-white/70 border-2 border-[#212529] hover:border-t-2 hover:border-b-2 hover:border-t-white hover:border-b-white pt-1 pb-1 transition duration-500 font-mono ml-5 text-[20px]">Tools</Link>
+                    <Link href="/challenges" className="hover:text-white/70 border-2 border-[#212529] hover:border-t-2 hover:border-b-2 hover:border-t-white hover:border-b-white pt-1 pb-1 transition duration-500 font-mono ml-5 mr-5 text-[20px]">Nos challenges</Link>
                     <MdExitToApp onClick={handleLogout} className="hover:text-red-400 cursor-pointer text-2xl transition duration-500" />
                 </div>
             </nav>

@@ -18,14 +18,14 @@ export async function proxy(request: NextRequest) {
     if (session_id && user_id) role = await getRole(user_id);
     if (isGuest) role = "guest";
 
+    const isPublicRoute = public_routes.some(route => path.startsWith(route));
+
     if (is_in_maintenance) {
         const isAllowedRoute = path.startsWith(maintenance_route);
         const isAllowedRole = role && maintenance_role.includes(role);
 
-        if (!isAllowedRoute && !isAllowedRole) return NextResponse.redirect(new URL("/dev/maintenance", request.url));
+        if ((!isAllowedRoute || !isPublicRoute) && !isAllowedRole) return NextResponse.redirect(new URL("/dev/maintenance", request.url));
     }
-
-    const isPublicRoute = public_routes.some(route => path.startsWith(route));
     
     if (!session_id && !isGuest && !isPublicRoute) return NextResponse.redirect(new URL("/accounts/login", request.url));
 

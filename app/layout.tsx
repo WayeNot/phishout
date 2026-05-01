@@ -23,7 +23,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const { isGuest, updateIsGuest, user_id, updateUserId, username, updateUsername, email, updateEmail, role, updateRole, pp_url, updatePp_url, status, updateStatus, coins, updateCoins, updatePoints } = useNavData()
 
     useEffect(() => {
-        
         const getSession = async () => {
             if (pathname.startsWith("/accounts")) return;
             try {
@@ -64,19 +63,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="fr">
             <body className="min-h-screen flex flex-col">
                 <NotifProvider>
-
-                    {!pathname.startsWith("/accounts") && (
+                    {pathname !== "/" && !pathname.startsWith("/accounts") && (
                         <div>
                             {user ? <Navbar /> : <NavbarNotConnected />}
                         </div>
                     )}
-
                     <main className="flex-1 relative">
                         {children}
                     </main>
-
                     {!pathname.startsWith("/accounts") && (
-                        <Footer />
+                        <Footer/>
                     )}
                 </NotifProvider>
             </body>
