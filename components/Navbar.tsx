@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import { useNavData } from "@/stores/store"
 
 import AdminPanel from "./AdminPanel"
-import { default_pp, maitenance_role, staff_role, statusColor, } from "@/lib/config"
+import { default_pp, staff_role, statusColor, } from "@/lib/config"
 import { TbCoinRupeeFilled } from "react-icons/tb"
 import { GiMusicSpell } from "react-icons/gi"
 import { useApi } from "@/hooks/useApi"
@@ -49,7 +49,7 @@ export default function Navbar() {
                 {!isGuest && (
                     <div className="flex items-center">
                         <div className="flex items-center gap-5 font-bold italic text-white/40">
-                            <Link href={`/user/${user_id}`} className="flex items-center gap-3 hover:text-white/70 transition duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-16 rounded-[25%] bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} />
+                            <Link href={`/user/${user_id}`} className="flex items-center gap-3 hover:text-white/70 transition duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-10 rounded-[25%] bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} />
                                 <span className="mx-2">-</span>
                                 {username}
                             </Link>

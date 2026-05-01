@@ -7,13 +7,14 @@ export const owners = [
 ];
 
 export const staff_role = ["owner", "admin", "dev"];
-export const maitenance_role: Role[] = ["owner", "admin", "dev", "contributor"];
+export const maintenance_role: Role[] = ["owner", "admin", "dev", "contributor"];
 
 export const maintenance_route = "/dev/maintenance"
 
 export const public_routes = [
-    "/dev/maintenance",
-    "/main"
+    "/",
+    "/accounts/login",
+    "/accounts/register",
 ]
 
 export const noGuestRoute = [

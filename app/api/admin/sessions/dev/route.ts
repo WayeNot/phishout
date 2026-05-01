@@ -1,4 +1,4 @@
-import { maitenance_role } from "@/lib/config";
+import { maintenance_role } from "@/lib/config";
 import { sql } from "@/lib/db";
 import { generateSessionId } from "@/lib/session";
 import bcrypt from "bcryptjs";
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
         const role = user[0]?.role
         
-        if (!user[0] || !isGoodPassword || !maitenance_role.includes(role)) return NextResponse.json({ success: false, error: "Erreur d'identification / rôle non authorisé" }, { status: 401 })
+        if (!user[0] || !isGoodPassword || !maintenance_role.includes(role)) return NextResponse.json({ success: false, error: "Erreur d'identification / rôle non authorisé" }, { status: 401 })
 
         const sessionId = generateSessionId()
 

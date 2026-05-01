@@ -72,30 +72,30 @@ export default function CtfBuilder({ onClose }: any) {
                         <div className="bg-[#1b1b2a] border border-white/5 rounded-xl p-3 space-y-2">
                             <div className="text-[11px] text-white/40">Informations générales</div>
                             <div className="grid grid-cols-2 gap-2">
-                                <input className="p-2 bg-[#232336] rounded-lg text-xs outline-none border border-white/5 focus:border-orange-500 transition" placeholder="Titre du challenge" value={builder.title} onChange={e => setBuilder({ title: e.target.value })} />
-                                <input className="p-2 bg-[#232336] rounded-lg text-xs outline-none border border-white/5 focus:border-orange-500 transition" placeholder="Format du flag" value={builder.flag_format} onChange={e => setBuilder({ flag_format: e.target.value })} />
+                                <input className="p-2 bg-[#232336] rounded-lg text-xs outline-none border border-white/5 focus:border-orange-500 transition" placeholder="Titre du challenge" value={builder.title} onChange={e => setBuilder({ ...builder, title: e.target.value })} />
+                                <input className="p-2 bg-[#232336] rounded-lg text-xs outline-none border border-white/5 focus:border-orange-500 transition" placeholder="Format du flag" value={builder.flag_format} onChange={e => setBuilder({ ...builder, flag_format: e.target.value })} />
                             </div>
                         </div>
                         <div className="bg-[#1b1b2a] border border-white/5 rounded-xl p-3 space-y-2 w-full">
                             <div className="text-[11px] text-white/40">Description</div>
-                            <textarea className="w-full h-20 overflow-y-auto p-2 bg-[#232336] rounded-lg text-xs outline-none border border-white/5 focus:border-orange-500 transition resize-none" placeholder="Description" value={builder.description} onChange={e => setBuilder({ description: e.target.value })} />
+                            <textarea className="w-full h-20 overflow-y-auto p-2 bg-[#232336] rounded-lg text-xs outline-none border border-white/5 focus:border-orange-500 transition resize-none" placeholder="Description" value={builder.description} onChange={e => setBuilder({ ...builder, description: e.target.value })} />
                         </div>
                         <div className="bg-[#1b1b2a] border border-white/5 rounded-xl p-3 space-y-2">
                             <div className="text-[11px] text-white/40">Configuration du challenge</div>
                             <div className="grid grid-cols-2 gap-2">
                                 <div className="bg-[#232336] rounded-lg p-2">
-                                    <DropDown isOnce label="Difficulté" value={builder.difficulty} isOpen={settings.difficulty} options={difficultyBtn} onToggle={() => setSettings(s => ({ ...s, difficulty: !s.difficulty }))} onSelect={v => { setBuilder({ difficulty: v as difficulty }); setSettings({ ...settings, difficulty: false }) }} />
+                                    <DropDown isOnce label="Difficulté" value={builder.difficulty} isOpen={settings.difficulty} options={difficultyBtn} onToggle={() => setSettings(s => ({ ...s, difficulty: !s.difficulty }))} onSelect={v => { setBuilder({ ...builder, difficulty: v as difficulty }); setSettings({ ...settings, difficulty: false }) }} />
                                 </div>
                                 <div className="bg-[#232336] rounded-lg p-2">
-                                    <DropDown isOnce={false} label="Catégorie" value={builder.category} isOpen={settings.category} options={categoryBtn} onToggle={() => setSettings(s => ({ ...s, category: !s.category }))} onSelect={(v) => { setBuilder({ category: builder.category.includes(v as category) ? builder.category.filter(c => c !== v) : [...builder.category, v as category] }); }} />
+                                    <DropDown isOnce={false} label="Catégorie" value={builder.category} isOpen={settings.category} options={categoryBtn} onToggle={() => setSettings(s => ({ ...s, category: !s.category }))} onSelect={(v) => { setBuilder({ ...builder, category: builder.category.includes(v as category) ? builder.category.filter(c => c !== v) : [...builder.category, v as category] }); }} />
                                 </div>
                             </div>
                         </div>
                         <div className="bg-[#1b1b2a] border border-white/5 rounded-xl p-3 space-y-2">
                             <div className="text-[11px] text-white/40">Récompense du challenge ( 🪙 - Coins / 🥇 - Points )</div>
                             <div className="grid grid-cols-2 gap-2">
-                                <input className="w-full p-2 bg-[#232336] rounded-lg text-xs outline-none border border-white/5 focus:border-green-500 transition" placeholder="Récompense de points global" type="number" value={builder.coins} onChange={e => setBuilder({ coins: Number(e.target.value) })} />
-                                <input className="w-full p-2 bg-[#232336] rounded-lg text-xs outline-none border border-white/5 focus:border-green-500 transition" placeholder="Récompense en coins" type="number" value={builder.points} onChange={e => setBuilder({ points: Number(e.target.value) })} />
+                                <input className="w-full p-2 bg-[#232336] rounded-lg text-xs outline-none border border-white/5 focus:border-green-500 transition" placeholder="Récompense de points global" type="number" value={builder.coins} onChange={e => setBuilder({ ...builder, coins: Number(e.target.value) })} />
+                                <input className="w-full p-2 bg-[#232336] rounded-lg text-xs outline-none border border-white/5 focus:border-green-500 transition" placeholder="Récompense en coins" type="number" value={builder.points} onChange={e => setBuilder({ ...builder, points: Number(e.target.value) })} />
                             </div>
                         </div>
                     </div>

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { sql } from "./lib/db";
 import { getRole, getUserIdBySessionId } from "./lib/session";
-import { maintenance_route, maitenance_role, noGuestRoute, public_routes } from "./lib/config";
+import { maintenance_role, maintenance_route, noGuestRoute, public_routes } from "./lib/config";
 
 export async function proxy(request: NextRequest) {
     const session_id = request.cookies.get("session_id")?.value;
@@ -10,30 +10,31 @@ export async function proxy(request: NextRequest) {
     const isGuest = request.cookies.get('isGuest')?.value
     const path = request.nextUrl.pathname;
 
-    if (!isGuest && !session_id && !path.startsWith("/accounts")) return NextResponse.redirect(new URL("/accounts/login", request.url));
+    const result = await sql`SELECT is_in_maintenance FROM settings LIMIT 1`;
+    const is_in_maintenance = result[0]?.is_in_maintenance;
 
-    if (path.startsWith("/accounts")) request.cookies.delete('isGuest')
+    let role = null;
+    if (session_id && user_id) role = await getRole(user_id);
+    if (isGuest) role = "guest";
+
+    if (is_in_maintenance) {
+        const isAllowedRoute = path.startsWith(maintenance_route)
+        const isAllowedRole = role && maintenance_role.includes(role);
+
+        if (!isAllowedRole && !isAllowedRoute) return NextResponse.redirect(new URL("/dev/maintenance", request.url));
+    }
+
+    const isPublicRoute = public_routes.some(route => path.startsWith(route))
+
+    if (!session_id && !isGuest && !isPublicRoute) return NextResponse.redirect(new URL("/accounts/login", request.url));
 
     if (isGuest && noGuestRoute.some(route => path.startsWith(route))) return NextResponse.redirect(new URL("/challenges", request.url));
 
-    const isPublicRoute = public_routes.includes(path)
+    const response = NextResponse.next();
 
-    const result = await sql`SELECT is_in_maintenance FROM settings LIMIT 1`;
-    const is_in_maintenance = result[0]?.is_in_maintenance
+    if (path.startsWith("/accounts")) response.cookies.delete("isGuest");
 
-    let role = null
-
-    if (session_id && user_id) role = await getRole(user_id)
-
-    if (isGuest) role = "guest"
-
-    if (is_in_maintenance) {
-        const isAllowedRole = role ? maitenance_role.includes(role) : false
-        if (!isPublicRoute && !isAllowedRole) return NextResponse.redirect(new URL(maintenance_route, request.url));
-    }
-
-    if (!session_id && !isGuest && !path.startsWith("/accounts") && !isPublicRoute) return NextResponse.redirect(new URL("/accounts/login", request.url));
-    return NextResponse.next()
+    return response;
 }
 
 export const config = {
