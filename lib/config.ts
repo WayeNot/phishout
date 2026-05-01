@@ -2,7 +2,7 @@ import { Role, Status } from "./types";
 
 export const owners = [
     { name: "Timéo", linkedin: "https://www.linkedin.com/in/tim%C3%A9o-baffreau-le-roux-511a1a353/" },
-    { name: "Romain", linkedin: "https://www.linkedin.com/in/romain-guibert-2851a52bb/" },
+    // { name: "Romain", linkedin: "https://www.linkedin.com/in/romain-guibert-2851a52bb/" },
     { name: "Aymeric", linkedin: "https://www.linkedin.com/in/aymeric-beaune-9b81b0364/" },
 ];
 

@@ -116,6 +116,8 @@ export type CtfBuilderState = {
     category: category[];
     flag_format: string;
     files: File[];
+    coins?: number;
+    points?: number;
 };
 
 export type NewCtfFlag = {

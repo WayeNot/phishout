@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { MdAdminPanelSettings, MdExitToApp } from "react-icons/md"
 import { useRouter } from "next/navigation"
 
@@ -17,7 +17,7 @@ import { SiOpslevel } from "react-icons/si"
 
 export default function Navbar() {
     const { call } = useApi()
-    const { user_id, username, status, role, pp_url, coins, points } = useNavData()
+    const { updateIsGuest, isGuest, user_id, username, status, role, pp_url, coins, points } = useNavData()
 
     const router = useRouter()
 
@@ -26,13 +26,14 @@ export default function Navbar() {
 
     const handleLogout = async () => {
         await call("/api/auth/logout", { method: "POST" })
+        updateIsGuest(false)
         router.refresh()
         router.push("/")
     }
 
     return (
         <div>
-            {role && role.some(r => "guest".includes(r)) && (
+            {isGuest && (
                 <Link href="/accounts/login" className="flex items-center justify-center gap-3 text-white/40 p-4 rounded-lg w-full border border-orange-600 text-[20px] text-center cursor-pointer hover:text-white/20 transition duration-500"><FaFire className="text-orange-500" /> Connectez-vous pour sauvegarder votre progression<FaFire className="text-orange-500" /></Link>
             )}
             <nav className="flex items-center justify-between p-4 sm:mx-5">
@@ -45,20 +46,22 @@ export default function Navbar() {
                         </div>
                     )}
                 </div>
-                <div className="flex items-center">
-                    <div className="flex items-center gap-5 font-bold italic text-white/40">
-                        <Link href={`/user/${user_id}`} className="flex items-center gap-3 hover:text-white/70 transition duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-16 rounded-[25%] bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} />
-                            <span className="mx-2">-</span>
-                            {username}
-                        </Link>
-                    </div>
-                    <p className="text-white/40 text-[20px] mx-5"> | </p>
+                {!isGuest && (
                     <div className="flex items-center">
-                        <p className="flex items-center gap-3 text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600"><TbCoinRupeeFilled />{coins}</p>
+                        <div className="flex items-center gap-5 font-bold italic text-white/40">
+                            <Link href={`/user/${user_id}`} className="flex items-center gap-3 hover:text-white/70 transition duration-500"><img src={pp_url || default_pp} alt="Logo de l'utilisateur" className={`w-16 rounded-[25%] bg-center bg-cover bg-no-repeat ${statusColor[status ?? "offline"]}`} />
+                                <span className="mx-2">-</span>
+                                {username}
+                            </Link>
+                        </div>
                         <p className="text-white/40 text-[20px] mx-5"> | </p>
-                        <p className="flex items-center gap-3 text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600"><SiOpslevel />{points}</p>
+                        <div className="flex items-center">
+                            <p className="flex items-center gap-3 text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600"><TbCoinRupeeFilled />{coins}</p>
+                            <p className="text-white/40 text-[20px] mx-5"> | </p>
+                            <p className="flex items-center gap-3 text-yellow-500 cursor-pointer text-[18px] transition duration-500 hover:text-yellow-600"><SiOpslevel />{points}</p>
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <button onClick={() => setMenuOpen(!menuOpen)} className="sm:hidden text-white text-2xl">☰</button>
 

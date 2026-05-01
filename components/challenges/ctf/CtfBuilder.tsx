@@ -4,32 +4,28 @@ import { FaFlag } from "react-icons/fa";
 import { useState } from "react";
 
 import DropDown from "@/components/ui/DropDown";
-import { categoryBtn, difficultyBtn, NewCtfFlag, difficulty, category } from "@/lib/types";
+import { categoryBtn, difficultyBtn, NewCtfFlag, difficulty, category, CtfBuilderState, ctf } from "@/lib/types";
 import { useCtfBuilderStore } from "@/stores/useCtfBuilderStore";
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineDescription } from "react-icons/md";
 import { useNotif } from "@/components/NotifProvider";
 import CreateFlag from "../CreateFlag";
 
-export default function CtfBuilder() {
+export default function CtfBuilder({ onClose }: any) {
     const { showNotif } = useNotif()
 
-    const { isOpen, setOpen, builder, setBuilder, flags, setFlags, selectedFiles, setSelectedFiles, resetBuilder } = useCtfBuilderStore();
-    const [settings, setSettings] = useState({ difficulty: false, category: false, files: false, flags: false });
+    const [builder, setBuilder] = useState<CtfBuilderState>({ title: "", description: "", difficulty: "", category: [],  flag_format: "", coins: undefined, points: undefined, files: [] });
 
-    const [newFlag, setNewFlag] = useState<NewCtfFlag>({ title: "", difficulty: "", description: "", flag: "", flag_format: "", hint: "", hint_cost: undefined, coins: undefined, points: undefined });
-    const [settingsNewFlag, setSettingsNewFlag] = useState({ difficulty: false });
+    const { isOpen, setOpen, flags, setFlags, selectedFiles, setSelectedFiles, resetBuilder } = useCtfBuilderStore();
+    const [settings, setSettings] = useState({ difficulty: false, category: false });
 
+    const [displayFiles, setDisplayFiles] = useState(false)
     const [displayFlags, setDisplayFlags] = useState(false)
+
     if (!isOpen) return null;
 
     const removeFile = (index: number) => {
         setSelectedFiles(selectedFiles.filter((_, i) => i !== index));
-    };
-
-    const addFlag = () => {
-        setFlags([...flags, newFlag]);
-        setNewFlag({ title: "", difficulty: "", description: "", flag: "", flag_format: "", hint: "", hint_cost: undefined, coins: undefined, points: undefined });
     };
 
     const removeFlag = (index: number) => {
@@ -104,7 +100,7 @@ export default function CtfBuilder() {
                         </div>
                     </div>
                     <div className="p-3 border-t border-white/10 bg-[#161625] grid grid-cols-2 gap-2">
-                        <button onClick={() => setSettings(s => ({ ...s, files: true }))} className="bg-[#232336] hover:bg-[#2a2a3d] text-xs py-2 rounded-lg transition duration-500 cursor-pointer">📁 Fichiers</button>
+                        <button onClick={() => setDisplayFiles(true)} className="bg-[#232336] hover:bg-[#2a2a3d] text-xs py-2 rounded-lg transition duration-500 cursor-pointer">📁 Fichiers</button>
                         <button onClick={() => setDisplayFlags(true)} className="bg-[#232336] hover:bg-[#2a2a3d] text-xs py-2 rounded-lg transition duration-500 cursor-pointer">🚩 Flags</button>
                         <button onClick={() => { resetBuilder(); setOpen(false); }} className="bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs py-2 rounded-lg transition duration-500 cursor-pointer">Annuler</button>
                         <button disabled={!canCreate} onClick={handleCreate} className="bg-green-500/10 hover:bg-green-500/20 text-green-300 text-xs py-2 rounded-lg transition duration-500 disabled:opacity-40 cursor-pointer">Créer</button>
@@ -179,7 +175,7 @@ export default function CtfBuilder() {
                     </div>
                 </div>
             </div>
-            {settings.files && (
+            {displayFiles && (
                 <div className="fixed inset-0 bg-black/80 flex items-center justify-center">
                     <div className="bg-[#12121c] w-140 rounded-2xl p-5 text-white shadow-2xl border border-white/10 space-y-4">
                         <div className="text-center">
@@ -210,6 +206,9 @@ export default function CtfBuilder() {
                     </div>
                 </div>
             )}
+            {/* {displayFiles && (
+                
+            )} */}
             {displayFlags && (
                 <CreateFlag onClose={() => setDisplayFlags(false)} onSubmit={(flag) => { setFlags(prev => [...prev, flag]); }} />
             )}

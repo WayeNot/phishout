@@ -6,8 +6,11 @@ import { maintenance_route, maitenance_role, noGuestRoute, public_routes } from 
 
 export async function proxy(request: NextRequest) {
     const session_id = request.cookies.get("session_id")?.value;
+    const user_id = await getUserIdBySessionId(session_id)
     const isGuest = request.cookies.get('isGuest')?.value
     const path = request.nextUrl.pathname;
+
+    if (!isGuest && !session_id && !path.startsWith("/accounts")) return NextResponse.redirect(new URL("/accounts/login", request.url));
 
     if (path.startsWith("/accounts")) request.cookies.delete('isGuest')
 
@@ -20,26 +23,16 @@ export async function proxy(request: NextRequest) {
 
     let role = null
 
-    if (session_id) {
-        const user_id = await getUserIdBySessionId(session_id)
-        if (user_id) role = await getRole(user_id)
-    }
+    if (session_id && user_id) role = await getRole(user_id)
 
-    if (isGuest) {
-        role = "guest"
-    }
+    if (isGuest) role = "guest"
 
     if (is_in_maintenance) {
         const isAllowedRole = role ? maitenance_role.includes(role) : false
         if (!isPublicRoute && !isAllowedRole) return NextResponse.redirect(new URL(maintenance_route, request.url));
     }
 
-    if (!session_id && !isGuest && !path.startsWith("/accounts") && !isPublicRoute) {
-        console.log("AHAH");
-        
-        return NextResponse.redirect(new URL("/accounts/login", request.url));
-    } 
-
+    if (!session_id && !isGuest && !path.startsWith("/accounts") && !isPublicRoute) return NextResponse.redirect(new URL("/accounts/login", request.url));
     return NextResponse.next()
 }
 

@@ -12,7 +12,7 @@ import { AiFillDelete } from "react-icons/ai";
 import CreateFlag from "../CreateFlag";
 import { TiWarning } from "react-icons/ti";
 
-export default function GeointBuilder({ onClose, onCreate }: any) {
+export default function GeointBuilder({ onClose }: any) {
     const { showNotif } = useNotif()
     const [builder, setBuilder] = useState<GeointBuilderState>({ title: "", description: "", difficulty: "", flag_format: "", coins: undefined, points: undefined, images: [] });
     const [flags, setFlags] = useState<NewCtfFlag[]>([])
