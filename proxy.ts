@@ -6,37 +6,40 @@ import { maintenance_role, maintenance_route, noGuestRoute, public_routes } from
 
 export async function proxy(request: NextRequest) {
     const session_id = request.cookies.get("session_id")?.value;
-    const user_id = await getUserIdBySessionId(session_id)
-    const isGuest = request.cookies.get('isGuest')?.value
+    const user_id = await getUserIdBySessionId(session_id);
+    const isGuest = request.cookies.get('isGuest')?.value;
     const path = request.nextUrl.pathname;
 
     const result = await sql`SELECT is_in_maintenance FROM settings LIMIT 1`;
-    const is_in_maintenance = result[0]?.is_in_maintenance;
+    const is_in_maintenance = result[0]?.is_in_maintenance;    
 
     let role = null;
+
     if (session_id && user_id) role = await getRole(user_id);
     if (isGuest) role = "guest";
 
     if (is_in_maintenance) {
-        const isAllowedRoute = path.startsWith(maintenance_route)
+        const isAllowedRoute = path.startsWith(maintenance_route);
         const isAllowedRole = role && maintenance_role.includes(role);
 
-        if (!isAllowedRole && !isAllowedRoute) return NextResponse.redirect(new URL("/dev/maintenance", request.url));
+        if (!isAllowedRoute && !isAllowedRole) return NextResponse.redirect(new URL("/dev/maintenance", request.url));
     }
 
-    const isPublicRoute = public_routes.some(route => path.startsWith(route))
+    const isPublicRoute = public_routes.some(route => path.startsWith(route));
 
+    console.log("Guest : ", isGuest);
+    
     if (!session_id && !isGuest && !isPublicRoute) return NextResponse.redirect(new URL("/accounts/login", request.url));
 
     if (isGuest && noGuestRoute.some(route => path.startsWith(route))) return NextResponse.redirect(new URL("/challenges", request.url));
 
     const response = NextResponse.next();
 
-    if (path.startsWith("/accounts")) response.cookies.delete("isGuest");
+    // if (path.startsWith("/accounts")) response.cookies.delete("isGuest");
 
     return response;
 }
 
 export const config = {
     matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
-}
+};

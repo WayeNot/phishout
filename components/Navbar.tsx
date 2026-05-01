@@ -57,7 +57,7 @@ export default function Navbar() {
                             </Link>
                         </div>
 
-                        <h2 className="text-white/40 font-mono text-[20px] border-b-1 ml-25">Your score : </h2>
+                        <h2 className="text-white/40 font-mono text-[20px] border-b ml-25">Your score : </h2>
                         <div className="flex items-center border-2 border-white/40 pt-1 pb-1 pl-3 pr-3 ml-5">
                             <p className="flex items-center gap-3 text-white/40 text-[18px] transition duration-500 hover:text-yellow-600"><RiCoinsFill />{coins}</p>
                             <p className="text-white/40 text-[20px] mx-5"> | </p>
